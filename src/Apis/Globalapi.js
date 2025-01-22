@@ -2,7 +2,7 @@
 
 
 
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'https://api-3q7fb.ondigitalocean.app/api';
 
 export const API_URLS = {
 
