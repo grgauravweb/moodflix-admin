@@ -29,7 +29,6 @@ const AddMovies = () => {
   });
 
   const [genresData, setGenresData] = useState([]); // State to hold genres data
-
   useEffect(() => {
     const storedGenresData = JSON.parse(
       localStorage.getItem("genresData") || "[]"
@@ -213,8 +212,8 @@ const AddMovies = () => {
             >
               <option value="">Select Slug</option>
               {genresData.map((slug) => (
-                <option key={slug._id} value={slug.slug}>
-                  {slug.slug}
+                <option key={slug._id} value={slug._id}>
+                  {slug.name}
                 </option>
               ))}
             </select>

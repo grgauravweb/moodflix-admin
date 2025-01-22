@@ -6,7 +6,6 @@ import { AuthProvider } from "./auth/AuthContext";
 
 function App() {
   return (
-    
     <AuthProvider>
       <Routes>
         <Route path="/" element={<SignIn />} />
