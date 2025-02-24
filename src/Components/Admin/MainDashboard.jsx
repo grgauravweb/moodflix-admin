@@ -175,7 +175,7 @@ const MainDashboard = () => {
             </thead>
             <tbody>
               {mostPopularMovies.slice(0, 5).map((movie) => (
-                <tr key={movie.id} className="border-b hover:bg-gray-100">
+                <tr key={movie._id} className="border-b hover:bg-gray-100">
                   <td className="p-2">{movie.title}</td>
                   <td className="p-2">{formatDate(movie.releaseDate)}</td>
                   <td className="p-2">{movie.totalView}</td>
@@ -196,7 +196,7 @@ const MainDashboard = () => {
             </thead>
             <tbody>
               {topRatedMovies.slice(0, 5).map((movie) => (
-                <tr key={movie.id} className="border-b hover:bg-gray-100">
+                <tr key={movie._id} className="border-b hover:bg-gray-100">
                   <td className="p-2">{movie.title}</td>
                   <td className="p-2">{formatDate(movie.releaseDate)}</td>
                   <td className="p-2">{movie.totalRating}</td>

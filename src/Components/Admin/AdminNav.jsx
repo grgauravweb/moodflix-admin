@@ -6,7 +6,7 @@ const AdminNav = () => {
 
     const { user, logout } = useAuth(); // Get user and logout function
     const navigate = useNavigate();
-  
+    // console.log("USER: ", user);
     const handleLogout = () => {
       logout(); // Call logout function
       navigate('/'); // Redirect to login page

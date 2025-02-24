@@ -38,6 +38,7 @@ import Comments from "../Components/Admin/Pages/Comments/Comments";
 import SearchAndImport from "../Components/Admin/Pages/SearchImport/SearchAndImport";
 import MovieScrapper from "../Components/Admin/Pages/MovieScrapper/MovieScrapper";
 import PaymentQr from "../Components/Admin/Pages/PaymentQr/PaymentQr";
+import { AddMoviesNew } from "../Components/Admin/Pages/AddMovies/AddMoviesNew";
 
 const Dashboard = () => {
   // Use useLocation hook to get the current path dynamically
@@ -51,7 +52,7 @@ const Dashboard = () => {
     } else if (currentPath === "/admin/dashboard") {
       return <MainDashboard />;
     } else if (currentPath === "/admin/add-movies") {
-      return <AddMovies />;
+      return <AddMoviesNew />;
     } else if (currentPath === "/admin/all-movies") {
       return <AllMovies />;
     } else if (currentPath === "/admin/all-tv-series") {
