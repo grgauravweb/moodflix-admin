@@ -3,6 +3,7 @@
 
 
 const BASE_URL = 'https://api-3q7fb.ondigitalocean.app/api';
+const BASE_URL2 = 'http://localhost:5000/api';
 
 export const API_URLS = {
 
@@ -20,7 +21,7 @@ export const API_URLS = {
 
 
   //// ADD MOVIES //////////////////////////
-  AddMovies: `${BASE_URL}/movies`,
+  AddMovies: `${BASE_URL2}/movies`,
 
   ////////TV SERIES ////////////////////
   AddTvSeries: `${BASE_URL}/tvseries`,

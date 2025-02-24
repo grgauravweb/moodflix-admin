@@ -40,8 +40,8 @@ export const AddMoviesNew = () => {
     enableDownload: false,
   });
 
-  const [genresData, setGenresData] = useState([]);  
-  const [actorData, setActorData] = useState([]);  
+  const [genresData, setGenresData] = useState([]);
+  const [actorData, setActorData] = useState([]);
   const [writerData, setWriterData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
 
@@ -193,7 +193,7 @@ export const AddMoviesNew = () => {
     }));
   };
 
-  const handlePublish = async() => {
+  const handlePublish = async () => {
     // Validate all steps before publishing
     let isValid = true;
     for (let step = 1; step <= 3; step++) {
@@ -207,90 +207,102 @@ export const AddMoviesNew = () => {
     if (isValid) {
       // Proceed with publishing
       try {
-            const {
-              title,
-              slug,
-              description,
-              actors,
-              directors,
-              writers,
-              imdbRating,
-              releaseDate,
-              countries,
-              genres,
-              runtime,
-              freePaid,
-              trailerUrl,
-              videoQuality,
-              sendNewsletter,
-              sendPushNotification,
-              publish,
-              enableDownload,
-              thumbnail,
-              poster,
-            } = movieData;
-      
-            const moviePayload = {
-              title,
-              slug,
-              description,
-              actors,
-              directors,
-              writers,
-              imdbRating,
-              releaseDate,
-              countries,
-              genres,
-              runtime,
-              freePaid,
-              trailerUrl,
-              videoQuality,
-              sendNewsletter,
-              sendPushNotification,
-              publish,
-              enableDownload,
-            };
-            console.log("Movie Payload:", moviePayload);
-            const response = await fetch(API_URLS.AddMovies, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(moviePayload),
-            });
-      
-            if (!response.ok) throw new Error("Network response was not ok");
-      
-            const data = await response.json();
-            console.log("Movie added successfully:", data);
-            alert("Movie added successfully");
-      
-            // Reset the form
-            setMovieData({
-              title: "",
-              slug: "",
-              description: "",
-              actors: "",
-              directors: "",
-              writers: "",
-              imdbRating: "",
-              releaseDate: "",
-              countries: "India",
-              genres: "",
-              runtime: "",
-              freePaid: "Paid",
-              trailerUrl: "",
-              videoQuality: "4K",
-              thumbnail: null,
-              poster: null,
-              sendNewsletter: false,
-              sendPushNotification: false,
-              publish: false,
-              enableDownload: false,
-            });
-          } catch (error) {
-            console.error("Error adding movie:", error.message);
-          }
-      console.log("Publishing movie:", movieData);
-      alert("Movie published successfully!");
+        const {
+          title,
+          slug,
+          description,
+          actors,
+          directors,
+          writers,
+          imdbRating,
+          releaseDate,
+          countries,
+          genres,
+          runtime,
+          freePaid,
+          trailerUrl,
+          videoQuality,
+          sendNewsletter,
+          sendPushNotification,
+          publish,
+          enableDownload,
+          thumbnail,
+          poster,
+          video
+        } = movieData;
+        console.log("Genres received:", genres, "Type:", typeof genres);
+        const genresArray = Array.isArray(genres) ? genres : [];  // Use directly if already an array
+
+        const actorsArray = Array.isArray(actors) ? actors : typeof actors === "string" ? actors.split(",").map(a => a.trim()) : [];
+        const directorsArray = Array.isArray(directors) ? directors : typeof directors === "string" ? directors.split(",").map(d => d.trim()) : [];
+        const writersArray = Array.isArray(writers) ? writers : typeof writers === "string" ? writers.split(",").map(w => w.trim()) : [];
+
+
+
+        // Create FormData for file uploads
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("slug", slug);
+        formData.append("description", description);
+        formData.append("actors", actorsArray);
+        formData.append("directors", directorsArray);
+        formData.append("writers", writersArray);
+        formData.append("imdbRating", imdbRating);
+        formData.append("releaseDate", releaseDate);
+        formData.append("countries", countries);
+        formData.append("genres", genresArray);
+        formData.append("runtime", runtime);
+        formData.append("freePaid", freePaid);
+        formData.append("trailerUrl", trailerUrl);
+        formData.append("videoQuality", videoQuality);
+        formData.append("sendNewsletter", sendNewsletter);
+        formData.append("sendPushNotification", sendPushNotification);
+        formData.append("publish", publish);
+        formData.append("enableDownload", enableDownload);
+
+        if (video) formData.append("video", video);
+        if (thumbnail) formData.append("thumbnail", thumbnail);
+        if (poster) formData.append("poster", poster);
+
+        console.log("Movie Payload:", formData);
+
+        // Send request to API
+        const response = await axios.post(API_URLS.AddMovies, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("Movie added successfully:", response.data);
+        if (response.data.success === true) {
+          // Reset form
+          setMovieData({
+            title: "",
+            slug: "",
+            description: "",
+            actors: "",
+            directors: "",
+            writers: "",
+            imdbRating: "",
+            releaseDate: "",
+            countries: "India",
+            genres: "",
+            runtime: "",
+            freePaid: "Paid",
+            trailerUrl: "",
+            videoQuality: "4K",
+            thumbnail: null,
+            poster: null,
+            video: null, // Reset video
+            sendNewsletter: false,
+            sendPushNotification: false,
+            publish: false,
+            enableDownload: false,
+          });
+          alert("Movie added successfully");
+        }
+
+      } catch (error) {
+        console.error("Error adding movie:", error.response?.data || error.message);
+      }
     }
   };
 
@@ -344,20 +356,18 @@ export const AddMoviesNew = () => {
 
   const StepIndicator = ({ number, title, isActive, isCompleted }) => (
     <div
-      className={`flex items-center ${
-        isActive ? "text-blue-600" : "text-gray-500"
-      }`}
+      className={`flex items-center ${isActive ? "text-blue-600" : "text-gray-500"
+        }`}
     >
       <div
         className={`
         flex items-center justify-center w-8 h-8 rounded-full border-2 
-        ${
-          isActive
+        ${isActive
             ? "border-blue-600 bg-blue-50"
             : isCompleted
-            ? "border-green-500 bg-green-50"
-            : "border-gray-300"
-        }
+              ? "border-green-500 bg-green-50"
+              : "border-gray-300"
+          }
         ${isCompleted ? "text-green-500" : ""}
       `}
       >
@@ -366,9 +376,8 @@ export const AddMoviesNew = () => {
       <span className="ml-2 font-medium">{title}</span>
       {number < 3 && (
         <div
-          className={`w-12 h-0.5 mx-2 ${
-            isCompleted ? "bg-green-500" : "bg-gray-300"
-          }`}
+          className={`w-12 h-0.5 mx-2 ${isCompleted ? "bg-green-500" : "bg-gray-300"
+            }`}
         />
       )}
     </div>
@@ -380,24 +389,21 @@ export const AddMoviesNew = () => {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={(e) => handleDrop(e, type)}
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-          isDragging
-            ? "border-blue-500 bg-blue-50"
-            : formErrors[type]
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${isDragging
+          ? "border-blue-500 bg-blue-50"
+          : formErrors[type]
             ? "border-red-500 bg-red-50"
             : "border-gray-300 hover:border-blue-400"
-        }`}
+          }`}
       >
         <Icon
-          className={`mx-auto mb-4 ${
-            formErrors[type] ? "text-red-400" : "text-gray-400"
-          }`}
+          className={`mx-auto mb-4 ${formErrors[type] ? "text-red-400" : "text-gray-400"
+            }`}
           size={48}
         />
         <p
-          className={`mb-2 ${
-            formErrors[type] ? "text-red-600" : "text-gray-600"
-          }`}
+          className={`mb-2 ${formErrors[type] ? "text-red-600" : "text-gray-600"
+            }`}
         >
           {formErrors[type] || `Drag & drop your ${type} here`}
         </p>
@@ -634,9 +640,8 @@ export const AddMoviesNew = () => {
           <div className="flex justify-between items-center">
             <button
               onClick={handleBack}
-              className={`flex items-center px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors ${
-                currentStep === 1 ? "invisible" : ""
-              }`}
+              className={`flex items-center px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors ${currentStep === 1 ? "invisible" : ""
+                }`}
             >
               <FiChevronLeft size={20} className="mr-2" />
               Back
