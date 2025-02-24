@@ -54,6 +54,9 @@ const Dashboard = () => {
     } else if (currentPath === "/admin/add-movies") {
       return <AddMoviesNew />;
     } else if (currentPath === "/admin/all-movies") {
+    } else if (currentPath === "/admin/add-moviess") {
+      return <AddMovies />;
+    } else if (currentPath === "/admin/all-movies") {
       return <AllMovies />;
     } else if (currentPath === "/admin/all-tv-series") {
       return <AllTvSeries />;

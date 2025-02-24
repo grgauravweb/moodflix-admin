@@ -14,6 +14,7 @@ function App() {
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/country" element={<Dashboard />} />
         <Route path="/admin/add-movies" element={<Dashboard />} />
+        <Route path="/admin/add-moviess" element={<Dashboard />} />
         <Route path="/admin/all-movies" element={<Dashboard />} />
 
         {/* TV Series Routes */}

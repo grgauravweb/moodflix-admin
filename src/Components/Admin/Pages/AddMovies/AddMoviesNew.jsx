@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import MovieForm from './MovieForm';
-import { BiCheck } from 'react-icons/bi';
-import { FiChevronLeft, FiChevronRight, FiImage, FiVideo, FiX } from 'react-icons/fi';
-import axios from 'axios';
-import { API_URLS } from '../../../../Apis/Globalapi';
+import React, { useState, useEffect } from "react";
+import MovieForm from "./MovieForm";
+import { BiCheck } from "react-icons/bi";
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiImage,
+  FiVideo,
+  FiX,
+} from "react-icons/fi";
+import axios from "axios";
+import { API_URLS } from "../../../../Apis/Globalapi";
 
 export const AddMoviesNew = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -34,17 +40,21 @@ export const AddMoviesNew = () => {
     enableDownload: false,
   });
 
-  const [genresData, setGenresData] = useState([]);
+  const [genresData, setGenresData] = useState([]);  
+  const [actorData, setActorData] = useState([]);  
+  const [writerData, setWriterData] = useState([]);
+  const [directorData, setDirectorData] = useState([]);
+
   const [uploadProgress, setUploadProgress] = useState({
     video: 0,
     thumbnail: 0,
-    poster: 0
+    poster: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
   const [previews, setPreviews] = useState({
     video: null,
     thumbnail: null,
-    poster: null
+    poster: null,
   });
 
   const validateStep = (step) => {
@@ -53,10 +63,13 @@ export const AddMoviesNew = () => {
     switch (step) {
       case 1: // Movie Info
         if (!movieData.title.trim()) errors.title = "Title is required";
-        if (!movieData.description.trim()) errors.description = "Description is required";
-        if (!movieData.actors.trim()) errors.actors = "Actors are required";
-        if (!movieData.directors.trim()) errors.directors = "Directors are required";
-        if (!movieData.releaseDate) errors.releaseDate = "Release date is required";
+        if (!movieData.description.trim())
+          errors.description = "Description is required";
+        if (!movieData.actors) errors.actors = "Actors are required";
+        if (!movieData.directors)
+          errors.directors = "Directors are required";
+        if (!movieData.releaseDate)
+          errors.releaseDate = "Release date is required";
         if (!movieData.runtime) errors.runtime = "Runtime is required";
         break;
       case 2: // Media
@@ -67,7 +80,7 @@ export const AddMoviesNew = () => {
       case 3: // Settings
         // Optional settings, no validation needed
         break;
-        default:
+      default:
         break;
     }
 
@@ -77,22 +90,22 @@ export const AddMoviesNew = () => {
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, 4));
+      setCurrentStep((prev) => Math.min(prev + 1, 4));
     }
   };
 
   const handleBack = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
+
     setMovieData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
     }));
-  
+
     // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors((prevErrors) => ({
@@ -101,7 +114,6 @@ export const AddMoviesNew = () => {
       }));
     }
   };
-  
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -115,36 +127,39 @@ export const AddMoviesNew = () => {
   const handleDrop = async (e, type) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const file = e.dataTransfer.files[0];
     if (file) {
-      if (type === 'video' && !file.type.startsWith('video/')) {
-        alert('Please drop a video file');
+      if (type === "video" && !file.type.startsWith("video/")) {
+        alert("Please drop a video file");
         return;
       }
-      if ((type === 'thumbnail' || type === 'poster') && !file.type.startsWith('image/')) {
-        alert('Please drop an image file');
+      if (
+        (type === "thumbnail" || type === "poster") &&
+        !file.type.startsWith("image/")
+      ) {
+        alert("Please drop an image file");
         return;
       }
-      
+
       setMovieData({
         ...movieData,
-        [type]: file
+        [type]: file,
       });
 
       // Clear error when file is uploaded
       if (formErrors[type]) {
         setFormErrors({
           ...formErrors,
-          [type]: null
+          [type]: null,
         });
       }
 
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
-      setPreviews(prev => ({
+      setPreviews((prev) => ({
         ...prev,
-        [type]: previewUrl
+        [type]: previewUrl,
       }));
 
       // Simulate upload progress
@@ -152,9 +167,9 @@ export const AddMoviesNew = () => {
       const interval = setInterval(() => {
         progress += 5;
         if (progress <= 100) {
-          setUploadProgress(prev => ({
+          setUploadProgress((prev) => ({
             ...prev,
-            [type]: progress
+            [type]: progress,
           }));
         } else {
           clearInterval(interval);
@@ -164,21 +179,21 @@ export const AddMoviesNew = () => {
   };
 
   const removeFile = (type) => {
-    setMovieData(prev => ({
+    setMovieData((prev) => ({
       ...prev,
-      [type]: null
+      [type]: null,
     }));
-    setPreviews(prev => ({
+    setPreviews((prev) => ({
       ...prev,
-      [type]: null
+      [type]: null,
     }));
-    setUploadProgress(prev => ({
+    setUploadProgress((prev) => ({
       ...prev,
-      [type]: 0
+      [type]: 0,
     }));
   };
 
-  const handlePublish = () => {
+  const handlePublish = async() => {
     // Validate all steps before publishing
     let isValid = true;
     for (let step = 1; step <= 3; step++) {
@@ -191,8 +206,91 @@ export const AddMoviesNew = () => {
 
     if (isValid) {
       // Proceed with publishing
-      console.log('Publishing movie:', movieData);
-      alert('Movie published successfully!');
+      try {
+            const {
+              title,
+              slug,
+              description,
+              actors,
+              directors,
+              writers,
+              imdbRating,
+              releaseDate,
+              countries,
+              genres,
+              runtime,
+              freePaid,
+              trailerUrl,
+              videoQuality,
+              sendNewsletter,
+              sendPushNotification,
+              publish,
+              enableDownload,
+              thumbnail,
+              poster,
+            } = movieData;
+      
+            const moviePayload = {
+              title,
+              slug,
+              description,
+              actors,
+              directors,
+              writers,
+              imdbRating,
+              releaseDate,
+              countries,
+              genres,
+              runtime,
+              freePaid,
+              trailerUrl,
+              videoQuality,
+              sendNewsletter,
+              sendPushNotification,
+              publish,
+              enableDownload,
+            };
+            console.log("Movie Payload:", moviePayload);
+            const response = await fetch(API_URLS.AddMovies, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(moviePayload),
+            });
+      
+            if (!response.ok) throw new Error("Network response was not ok");
+      
+            const data = await response.json();
+            console.log("Movie added successfully:", data);
+            alert("Movie added successfully");
+      
+            // Reset the form
+            setMovieData({
+              title: "",
+              slug: "",
+              description: "",
+              actors: "",
+              directors: "",
+              writers: "",
+              imdbRating: "",
+              releaseDate: "",
+              countries: "India",
+              genres: "",
+              runtime: "",
+              freePaid: "Paid",
+              trailerUrl: "",
+              videoQuality: "4K",
+              thumbnail: null,
+              poster: null,
+              sendNewsletter: false,
+              sendPushNotification: false,
+              publish: false,
+              enableDownload: false,
+            });
+          } catch (error) {
+            console.error("Error adding movie:", error.message);
+          }
+      console.log("Publishing movie:", movieData);
+      alert("Movie published successfully!");
     }
   };
 
@@ -204,22 +302,75 @@ export const AddMoviesNew = () => {
         setGenresData(genresResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
-        }
-        };
-        fetchData();
-    }, []);
+      }
+    };
+
+    const fetchActorData = async () => {
+      try {
+        // Fetching Genres
+        const actorResponse = await axios.get(API_URLS.getActor);
+        setActorData(actorResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchWriterData = async () => {
+      try {
+        // Fetching Genres
+        const genresResponse = await axios.get(API_URLS.getWriter);
+        setWriterData(genresResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchDirectorData = async () => {
+      try {
+        // Fetching Genres
+        const genresResponse = await axios.get(API_URLS.getDirector);
+        setDirectorData(genresResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+    fetchActorData();
+    fetchWriterData();
+    fetchDirectorData();
+
+  }, []);
 
   const StepIndicator = ({ number, title, isActive, isCompleted }) => (
-    <div className={`flex items-center ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>
-      <div className={`
+    <div
+      className={`flex items-center ${
+        isActive ? "text-blue-600" : "text-gray-500"
+      }`}
+    >
+      <div
+        className={`
         flex items-center justify-center w-8 h-8 rounded-full border-2 
-        ${isActive ? 'border-blue-600 bg-blue-50' : isCompleted ? 'border-green-500 bg-green-50' : 'border-gray-300'}
-        ${isCompleted ? 'text-green-500' : ''}
-      `}>
+        ${
+          isActive
+            ? "border-blue-600 bg-blue-50"
+            : isCompleted
+            ? "border-green-500 bg-green-50"
+            : "border-gray-300"
+        }
+        ${isCompleted ? "text-green-500" : ""}
+      `}
+      >
         {isCompleted ? <BiCheck size={16} /> : number}
       </div>
       <span className="ml-2 font-medium">{title}</span>
-      {number < 3 && <div className={`w-12 h-0.5 mx-2 ${isCompleted ? 'bg-green-500' : 'bg-gray-300'}`} />}
+      {number < 3 && (
+        <div
+          className={`w-12 h-0.5 mx-2 ${
+            isCompleted ? "bg-green-500" : "bg-gray-300"
+          }`}
+        />
+      )}
     </div>
   );
 
@@ -230,11 +381,24 @@ export const AddMoviesNew = () => {
         onDragLeave={handleDragLeave}
         onDrop={(e) => handleDrop(e, type)}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-          isDragging ? 'border-blue-500 bg-blue-50' : formErrors[type] ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-blue-400'
+          isDragging
+            ? "border-blue-500 bg-blue-50"
+            : formErrors[type]
+            ? "border-red-500 bg-red-50"
+            : "border-gray-300 hover:border-blue-400"
         }`}
       >
-        <Icon className={`mx-auto mb-4 ${formErrors[type] ? 'text-red-400' : 'text-gray-400'}`} size={48} />
-        <p className={`mb-2 ${formErrors[type] ? 'text-red-600' : 'text-gray-600'}`}>
+        <Icon
+          className={`mx-auto mb-4 ${
+            formErrors[type] ? "text-red-400" : "text-gray-400"
+          }`}
+          size={48}
+        />
+        <p
+          className={`mb-2 ${
+            formErrors[type] ? "text-red-600" : "text-gray-600"
+          }`}
+        >
           {formErrors[type] || `Drag & drop your ${type} here`}
         </p>
         <p className="text-sm text-gray-500">or</p>
@@ -248,15 +412,15 @@ export const AddMoviesNew = () => {
               if (file) {
                 setMovieData({ ...movieData, [type]: file });
                 const previewUrl = URL.createObjectURL(file);
-                setPreviews(prev => ({
+                setPreviews((prev) => ({
                   ...prev,
-                  [type]: previewUrl
+                  [type]: previewUrl,
                 }));
                 // Clear error when file is uploaded
                 if (formErrors[type]) {
                   setFormErrors({
                     ...formErrors,
-                    [type]: null
+                    [type]: null,
                   });
                 }
               }
@@ -275,12 +439,12 @@ export const AddMoviesNew = () => {
           >
             <FiX size={16} />
           </button>
-          {type === 'video' ? (
+          {type === "video" ? (
             <video
               src={previews[type]}
               controls
               className="w-full rounded-lg"
-              style={{ maxHeight: '200px' }}
+              style={{ maxHeight: "200px" }}
             />
           ) : (
             <img
@@ -297,7 +461,9 @@ export const AddMoviesNew = () => {
                   style={{ width: `${uploadProgress[type]}%` }}
                 />
               </div>
-              <p className="text-sm text-gray-600 mt-1">{uploadProgress[type]}% uploaded</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {uploadProgress[type]}% uploaded
+              </p>
             </div>
           )}
         </div>
@@ -310,27 +476,29 @@ export const AddMoviesNew = () => {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Add New Movie</h1>
-            
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">
+              Add New Movie
+            </h1>
+
             {/* Step Indicator */}
             <div className="flex justify-center items-center mb-8">
-              <StepIndicator 
-                number={1} 
-                title="Movie Info" 
-                isActive={currentStep === 1} 
-                isCompleted={currentStep > 1} 
+              <StepIndicator
+                number={1}
+                title="Movie Info"
+                isActive={currentStep === 1}
+                isCompleted={currentStep > 1}
               />
-              <StepIndicator 
-                number={2} 
-                title="Media" 
-                isActive={currentStep === 2} 
-                isCompleted={currentStep > 2} 
+              <StepIndicator
+                number={2}
+                title="Media"
+                isActive={currentStep === 2}
+                isCompleted={currentStep > 2}
               />
-              <StepIndicator 
-                number={3} 
-                title="Settings" 
-                isActive={currentStep === 3} 
-                isCompleted={currentStep > 3} 
+              <StepIndicator
+                number={3}
+                title="Settings"
+                isActive={currentStep === 3}
+                isCompleted={currentStep > 3}
               />
             </div>
 
@@ -339,8 +507,12 @@ export const AddMoviesNew = () => {
               <div className="bg-blue-50 p-6 rounded-lg mb-8">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-blue-900">Import from TMDB</h2>
-                    <p className="text-blue-700">Quickly import movie details using TMDB ID</p>
+                    <h2 className="text-xl font-semibold text-blue-900">
+                      Import from TMDB
+                    </h2>
+                    <p className="text-blue-700">
+                      Quickly import movie details using TMDB ID
+                    </p>
                   </div>
                   <div className="flex space-x-2">
                     <input
@@ -363,11 +535,14 @@ export const AddMoviesNew = () => {
           {/* Step Content */}
           <div className="mb-8">
             {currentStep === 1 && (
-              <MovieForm 
-                movieData={movieData} 
+              <MovieForm
+                movieData={movieData}
                 handleInputChange={handleInputChange}
                 errors={formErrors}
                 genresData={genresData}
+                actorData={actorData}
+                writerData={writerData}
+                directorData={directorData}
                 setMovieData={setMovieData}
               />
             )}
@@ -378,11 +553,15 @@ export const AddMoviesNew = () => {
                   <h3 className="text-xl font-semibold mb-4">Upload Video</h3>
                   <UploadBox type="video" accept="video/*" icon={FiVideo} />
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Thumbnail</h3>
-                    <UploadBox type="thumbnail" accept="image/*" icon={FiImage} />
+                    <UploadBox
+                      type="thumbnail"
+                      accept="image/*"
+                      icon={FiImage}
+                    />
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Poster</h3>
@@ -395,15 +574,37 @@ export const AddMoviesNew = () => {
             {currentStep === 3 && (
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white rounded-lg">
-                  <h3 className="text-xl font-semibold mb-6">Publication Settings</h3>
+                  <h3 className="text-xl font-semibold mb-6">
+                    Publication Settings
+                  </h3>
                   <div className="space-y-4">
                     {[
-                      { id: 'sendNewsletter', label: 'Send Newsletter', description: 'Notify subscribers about this new movie' },
-                      { id: 'sendPushNotification', label: 'Send Push Notification', description: 'Send push notifications to mobile app users' },
-                      { id: 'publish', label: 'Publish Immediately', description: 'Make this movie visible to users' },
-                      { id: 'enableDownload', label: 'Enable Downloads', description: 'Allow users to download this movie' }
+                      {
+                        id: "sendNewsletter",
+                        label: "Send Newsletter",
+                        description: "Notify subscribers about this new movie",
+                      },
+                      {
+                        id: "sendPushNotification",
+                        label: "Send Push Notification",
+                        description:
+                          "Send push notifications to mobile app users",
+                      },
+                      {
+                        id: "publish",
+                        label: "Publish Immediately",
+                        description: "Make this movie visible to users",
+                      },
+                      {
+                        id: "enableDownload",
+                        label: "Enable Downloads",
+                        description: "Allow users to download this movie",
+                      },
                     ].map(({ id, label, description }) => (
-                      <div key={id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                      <div
+                        key={id}
+                        className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
                         <input
                           type="checkbox"
                           id={id}
@@ -413,7 +614,12 @@ export const AddMoviesNew = () => {
                           className="mt-1 h-5 w-5 text-blue-500 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <div>
-                          <label htmlFor={id} className="font-medium text-gray-900">{label}</label>
+                          <label
+                            htmlFor={id}
+                            className="font-medium text-gray-900"
+                          >
+                            {label}
+                          </label>
                           <p className="text-sm text-gray-500">{description}</p>
                         </div>
                       </div>
@@ -429,7 +635,7 @@ export const AddMoviesNew = () => {
             <button
               onClick={handleBack}
               className={`flex items-center px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors ${
-                currentStep === 1 ? 'invisible' : ''
+                currentStep === 1 ? "invisible" : ""
               }`}
             >
               <FiChevronLeft size={20} className="mr-2" />

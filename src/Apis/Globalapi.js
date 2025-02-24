@@ -108,6 +108,9 @@ export const API_URLS = {
 
   ///ACTORS/DIRECTORS///////
   getStars: `${BASE_URL}/stars`,
+  getActor: `${BASE_URL}/stars/Actor`,
+  getDirector: `${BASE_URL}/stars/Director`,
+  getWriter: `${BASE_URL}/stars/Writer`,
   saveStar: `${BASE_URL}/stars`,
 
 
