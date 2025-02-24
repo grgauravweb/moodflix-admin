@@ -5,6 +5,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiImage,
+  FiLoader,
   FiVideo,
   FiX,
 } from "react-icons/fi";
@@ -44,7 +45,7 @@ export const AddMoviesNew = () => {
   const [actorData, setActorData] = useState([]);
   const [writerData, setWriterData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({
     video: 0,
     thumbnail: 0,
@@ -206,6 +207,7 @@ export const AddMoviesNew = () => {
 
     if (isValid) {
       // Proceed with publishing
+      setLoading(true);
       try {
         const {
           title,
@@ -302,6 +304,8 @@ export const AddMoviesNew = () => {
 
       } catch (error) {
         console.error("Error adding movie:", error.response?.data || error.message);
+      }finally{
+        setLoading(false);
       }
     }
   };
@@ -658,10 +662,11 @@ export const AddMoviesNew = () => {
               ) : (
                 <button
                   onClick={handlePublish}
-                  className="flex items-center px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                  disabled={loading}
+                  className={`flex items-center px-6 py-2 ${loading ? "bg-red-500" : "bg-green-500 hover:bg-green-600 transition-colors" }  text-white rounded-lg `}
                 >
-                  Publish Movie
-                  <BiCheck size={20} className="ml-2" />
+                  { loading ? "Please wait..." : "Publish Movie"}
+                  {loading ? <FiLoader size={20} className="ml-2 animate-pulse"/> : <BiCheck size={20} className="ml-2" />}
                 </button>
               )}
             </div>

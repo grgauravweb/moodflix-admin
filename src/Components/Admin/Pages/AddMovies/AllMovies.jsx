@@ -22,6 +22,7 @@ const AllMovies = () => {
       try {
         // Fetching movies
         const movieResponse = await axios.get(API_URLS.AddMovies);
+        console.log(movieResponse.data);
         setMovies(movieResponse.data);
 
         // Fetching stars

@@ -414,7 +414,19 @@ const MovieForm = ({
               ))}
             </select>
           </div>
-        </div>
+          <div>
+          <label className="block text-sm font-medium mb-1">Free/Paid</label>
+          <select
+            name="freePaid"
+            value={movieData.freePaid}
+            onChange={handleInputChange}
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+          >
+            <option value="Free">Free</option>
+            <option value="Paid">Paid</option>
+          </select>
+          </div>
+          </div>
       </div>
     </div>
   );

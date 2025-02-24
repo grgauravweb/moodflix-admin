@@ -53,7 +53,6 @@ const Dashboard = () => {
       return <MainDashboard />;
     } else if (currentPath === "/admin/add-movies") {
       return <AddMoviesNew />;
-    } else if (currentPath === "/admin/all-movies") {
     } else if (currentPath === "/admin/add-moviess") {
       return <AddMovies />;
     } else if (currentPath === "/admin/all-movies") {
