@@ -160,10 +160,72 @@ const AllMovies = () => {
 
   const handleSaveMovie = async (updatedMovie) => {
     try {
+      const {
+        title,
+        slug,
+        description,
+        actors,
+        directors,
+        writers,
+        imdbRating,
+        releaseDate,
+        countries,
+        genres,
+        runtime,
+        freePaid,
+        trailerUrl,
+        videoQuality,
+        sendNewsletter,
+        sendPushNotification,
+        publish,
+        enableDownload,
+        thumbnail,
+        poster,
+        video
+      } = updatedMovie;
+      
+      const genresArray = Array.isArray(genres) ? genres : [];  // Use directly if already an array
+
+      const actorsArray = Array.isArray(actors) ? actors : typeof actors === "string" ? actors.split(",").map(a => a.trim()) : [];
+      const directorsArray = Array.isArray(directors) ? directors : typeof directors === "string" ? directors.split(",").map(d => d.trim()) : [];
+      const writersArray = Array.isArray(writers) ? writers : typeof writers === "string" ? writers.split(",").map(w => w.trim()) : [];
+
+      // Create FormData for file uploads
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("slug", slug);
+      formData.append("description", description);
+      formData.append("actors", actorsArray);
+      formData.append("directors", directorsArray);
+      formData.append("writers", writersArray);
+      formData.append("imdbRating", imdbRating);
+      formData.append("releaseDate", releaseDate);
+      formData.append("countries", countries);
+      formData.append("genres", genresArray);
+      formData.append("runtime", runtime);
+      formData.append("freePaid", freePaid);
+      formData.append("trailerUrl", trailerUrl);
+      formData.append("videoQuality", videoQuality);
+      formData.append("sendNewsletter", sendNewsletter);
+      formData.append("sendPushNotification", sendPushNotification);
+      formData.append("publish", publish);
+      formData.append("enableDownload", enableDownload);
+
+      if (video) formData.append("video", video);
+      if (thumbnail) formData.append("thumbnail", thumbnail);
+      if (poster) formData.append("poster", poster);
+
+      console.log("Movie Payload:", formData);
       const response = await axios.put(
         `${API_URLS.AddMovies}/${updatedMovie._id}`,
-        updatedMovie
+        formData
       ); // Note the use of _id
+    
+      if(response.data.success === true) {
+        alert("Movie updated successfully");
+        setIsEditModalOpen(false);
+
+      }
       setMovies(
         movies.map((movie) =>
           movie._id === response.data._id ? response.data : movie

@@ -232,7 +232,7 @@ export const AddMoviesNew = () => {
           poster,
           video
         } = movieData;
-        console.log("Genres received:", genres, "Type:", typeof genres);
+        
         const genresArray = Array.isArray(genres) ? genres : [];  // Use directly if already an array
 
         const actorsArray = Array.isArray(actors) ? actors : typeof actors === "string" ? actors.split(",").map(a => a.trim()) : [];
