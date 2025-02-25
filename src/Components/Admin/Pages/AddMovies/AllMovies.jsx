@@ -181,14 +181,26 @@ const AllMovies = () => {
         enableDownload,
         thumbnail,
         poster,
-        video
+        video,
       } = updatedMovie;
-      
-      const genresArray = Array.isArray(genres) ? genres : [];  // Use directly if already an array
 
-      const actorsArray = Array.isArray(actors) ? actors : typeof actors === "string" ? actors.split(",").map(a => a.trim()) : [];
-      const directorsArray = Array.isArray(directors) ? directors : typeof directors === "string" ? directors.split(",").map(d => d.trim()) : [];
-      const writersArray = Array.isArray(writers) ? writers : typeof writers === "string" ? writers.split(",").map(w => w.trim()) : [];
+      const genresArray = Array.isArray(genres) ? genres : []; // Use directly if already an array
+
+      const actorsArray = Array.isArray(actors)
+        ? actors
+        : typeof actors === "string"
+        ? actors.split(",").map((a) => a.trim())
+        : [];
+      const directorsArray = Array.isArray(directors)
+        ? directors
+        : typeof directors === "string"
+        ? directors.split(",").map((d) => d.trim())
+        : [];
+      const writersArray = Array.isArray(writers)
+        ? writers
+        : typeof writers === "string"
+        ? writers.split(",").map((w) => w.trim())
+        : [];
 
       // Create FormData for file uploads
       const formData = new FormData();
@@ -220,11 +232,10 @@ const AllMovies = () => {
         `${API_URLS.AddMovies}/${updatedMovie._id}`,
         formData
       ); // Note the use of _id
-    
-      if(response.data.success === true) {
+
+      if (response.data.success === true) {
         alert("Movie updated successfully");
         setIsEditModalOpen(false);
-
       }
       setMovies(
         movies.map((movie) =>
@@ -427,7 +438,7 @@ const AllMovies = () => {
                     options={options.genresdataOptions}
                     value={options.genresdataOptions.filter(
                       (option) =>
-                        (selectedMovie.slug) &&
+                        selectedMovie.slug &&
                         selectedMovie.slug.includes(option.value)
                     )}
                     onChange={(selectedOption) =>
@@ -436,7 +447,6 @@ const AllMovies = () => {
                         slug: selectedOption ? selectedOption.value : "",
                       })
                     }
-
                     className="text-gray-700"
                   />
                 </div>
@@ -662,44 +672,59 @@ const AllMovies = () => {
                     Thumbnail
                   </label>
                   <input
-                    type="text"
-                    value={selectedMovie.thumbnail}
-                    onChange={(e) =>
-                      setSelectedMovie({
-                        ...selectedMovie,
-                        thumbnail: e.target.value,
-                      })
-                    }
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setSelectedMovie({
+                            ...selectedMovie,
+                            thumbnail: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <img
                   src={selectedMovie.thumbnail ? decodeURIComponent(selectedMovie.thumbnail) : "/placeholder.svg"}
-                  alt="Thumbnail"
-                  className="mt-2 w-96 h-96 object-cover rounded"
-                />
-                
+                    alt="Thumbnail"
+                    className="mt-2 w-96 h-96 object-cover rounded"
+                  />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Poster
                   </label>
                   <input
-                    type="text"
-                    value={selectedMovie.poster}
-                    onChange={(e) =>
-                      setSelectedMovie({
-                        ...selectedMovie,
-                        poster: e.target.value,
-                      })
-                    }
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setSelectedMovie({
+                            ...selectedMovie,
+                            poster: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <img
-                    src={selectedMovie.poster || "/placeholder.svg"}
+                  src={selectedMovie.poster ? decodeURIComponent(selectedMovie.poster) : "/placeholder.svg"}
                     alt="Poster"
                     className="mt-2 w-96 h-96 object-cover rounded"
                   />
                 </div>
+
                 <div className="col-span-2 flex items-center space-x-4">
                   <div className="flex items-center">
                     <input
