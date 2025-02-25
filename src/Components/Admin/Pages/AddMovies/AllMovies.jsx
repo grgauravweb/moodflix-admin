@@ -3,6 +3,7 @@ import { FaEdit, FaSearch, FaTimes, FaTrashAlt } from "react-icons/fa";
 import EditMovieModal from "../../Modals/AllMovie/EditAllMovie";
 import axios from "axios"; // Make sure to install axios
 import { API_URLS } from "../../../../Apis/Globalapi";
+import Select from "react-select";
 
 const AllMovies = () => {
   const [movies, setMovies] = useState([]);
@@ -12,40 +13,101 @@ const AllMovies = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // States for stars, genres, and countries
-  const [stars, setStars] = useState([]);
-  const [genres, setGenres] = useState([]);
+  const [genresData, setGenresData] = useState([]);
+  const [actorData, setActorData] = useState([]);
+  const [writerData, setWriterData] = useState([]);
+  const [directorData, setDirectorData] = useState([]);
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchMovieData = async () => {
       try {
         // Fetching movies
         const movieResponse = await axios.get(API_URLS.AddMovies);
-        console.log(movieResponse.data);
+        console.log("data", movieResponse.data);
         setMovies(movieResponse.data);
-
-        // Fetching stars
-        const starsResponse = await axios.get(`${API_URLS.BASE_URL}/stars`);
-        setStars(starsResponse.data);
-
-        // Fetching genres
-        const genresResponse = await axios.get(`${API_URLS.BASE_URL}/genres`);
-        setGenres(genresResponse.data);
-
-        // Fetching countries
-        const countriesResponse = await axios.get(`${API_URLS.BASE_URL}/countries`);
-        setCountries(countriesResponse.data);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
+    const fetchCountryData = async () => {
+      try {
+        // Fetching movies
+        const countriesResponse = await axios.get(
+          `${API_URLS.BASE_URL}/countries`
+        );
+        setCountries(countriesResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        // Fetching Genres
+        const genresResponse = await axios.get(API_URLS.genre);
+        setGenresData(genresResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchActorData = async () => {
+      try {
+        // Fetching Genres
+        const actorResponse = await axios.get(API_URLS.getActor);
+        setActorData(actorResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchWriterData = async () => {
+      try {
+        // Fetching Genres
+        const genresResponse = await axios.get(API_URLS.getWriter);
+        setWriterData(genresResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchDirectorData = async () => {
+      try {
+        // Fetching Genres
+        const genresResponse = await axios.get(API_URLS.getDirector);
+        setDirectorData(genresResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchMovieData();
     fetchData();
+    fetchActorData();
+    fetchWriterData();
+    fetchDirectorData();
   }, []);
 
-
+  const options = {
+    actors: actorData.map((item) => ({
+      value: item._id,
+      label: item.starName,
+    })),
+    directors: directorData.map((item) => ({
+      value: item._id,
+      label: item.starName,
+    })),
+    writers: writerData.map((item) => ({
+      value: item._id,
+      label: item.starName,
+    })),
+    genresdataOptions: genresData.map((item) => ({
+      value: item._id,
+      label: item.name,
+    })),
+  };
 
   // Fetch movies from backend
   useEffect(() => {
@@ -90,7 +152,7 @@ const AllMovies = () => {
     try {
       await axios.delete(`${API_URLS.AddMovies}/${id}`); // Update this URL
       setMovies(movies.filter((movie) => movie._id !== id));
-      alert("Date deleted")
+      alert("Date deleted");
     } catch (error) {
       console.error("Error deleting movie:", error);
     }
@@ -178,7 +240,9 @@ const AllMovies = () => {
           <table className="w-full">
             <thead className="bg-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  #
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Thumbnail
                 </th>
@@ -213,24 +277,40 @@ const AllMovies = () => {
                       className="w-16 h-16 object-cover rounded"
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium">{movie.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{new Date(movie.releaseDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{movie.enableDownload ? "Yes" : "No"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium">
+                    {movie.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {new Date(movie.releaseDate).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {movie.enableDownload ? "Yes" : "No"}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     {movie.freePaid === "Paid" ? "Yes" : "No"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${movie.publish ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        movie.publish
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
                     >
                       {movie.publish ? "Published" : "Unpublished"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <button onClick={() => handleEditClick(movie)} className="text-blue-500 hover:text-blue-700 mr-2">
+                    <button
+                      onClick={() => handleEditClick(movie)}
+                      className="text-blue-500 hover:text-blue-700 mr-2"
+                    >
                       <FaEdit />
                     </button>
-                    <button onClick={() => handleDeleteClick(movie._id)} className="text-red-500 hover:text-red-700">
+                    <button
+                      onClick={() => handleDeleteClick(movie._id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
                       <FaTrashAlt />
                     </button>
                   </td>
@@ -242,62 +322,106 @@ const AllMovies = () => {
       </div>
 
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 overflow-y-auto">
+        <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 overflow-y-auto">
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">Edit Movie</h3>
-              <button onClick={() => setIsEditModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
                 <FaTimes />
               </button>
             </div>
             <form
               onSubmit={(e) => {
-                e.preventDefault()
-                handleSaveMovie(selectedMovie)
+                e.preventDefault();
+                handleSaveMovie(selectedMovie);
               }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Title
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.title}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, title: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        title: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Slug</label>
-                  <input
-                    type="text"
-                    value={selectedMovie.slug}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, slug: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  <label className="block text-sm font-medium text-gray-700">
+                    Slug
+                  </label>
+
+                  <Select
+                    options={options.genresdataOptions}
+                    value={options.genresdataOptions.filter(
+                      (option) =>
+                        (selectedMovie.slug) &&
+                        selectedMovie.slug.includes(option.value)
+                    )}
+                    onChange={(selectedOption) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        slug: selectedOption ? selectedOption.value : "",
+                      })
+                    }
+
+                    className="text-gray-700"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Release Date</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Release Date
+                  </label>
                   <input
                     type="date"
                     value={selectedMovie.releaseDate}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, releaseDate: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        releaseDate: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">IMDB Rating</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    IMDB Rating
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.imdbRating}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, imdbRating: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        imdbRating: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Video Quality</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Video Quality
+                  </label>
                   <select
                     value={selectedMovie.videoQuality}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, videoQuality: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        videoQuality: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   >
                     <option value="1080p">1080p</option>
@@ -306,10 +430,17 @@ const AllMovies = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Free/Paid</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Free/Paid
+                  </label>
                   <select
                     value={selectedMovie.freePaid}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, freePaid: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        freePaid: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   >
                     <option value="Free">Free</option>
@@ -317,103 +448,194 @@ const AllMovies = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Runtime</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Runtime
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.runtime}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, runtime: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        runtime: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Countries</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Countries
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.countries}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, countries: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        countries: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Genres</label>
-                  <input
-                    type="text"
-                    value={selectedMovie.genres.join(", ")}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, genres: e.target.value.split(", ") })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  <label className="block text-sm font-medium text-gray-700">
+                    Genres
+                  </label>
+
+                  <Select
+                    isMulti
+                    options={options.genresdataOptions} // Use dynamically generated options from generedata
+                    value={options.genresdataOptions.filter(
+                      (option) =>
+                        Array.isArray(selectedMovie.genres) &&
+                        selectedMovie.genres?.includes(option.value)
+                    )}
+                    onChange={(selectedOptions) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        genres: selectedOptions.map((option) => option.value),
+                      })
+                    }
+                    className="text-gray-700"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Actors</label>
-                  <input
-                    type="text"
-                    value={selectedMovie.actors}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, actors: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  <label className="block text-sm font-medium text-gray-700">
+                    Actors
+                  </label>
+
+                  <Select
+                    isMulti
+                    options={options.actors}
+                    value={options.actors.filter((option) =>
+                      selectedMovie.actors?.includes(option.value)
+                    )}
+                    onChange={(selectedOptions) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        actors: selectedOptions.map((option) => option.value),
+                      })
+                    }
+                    className="text-gray-700"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Directors</label>
-                  <input
-                    type="text"
-                    value={selectedMovie.directors}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, directors: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  <label className="block text-sm font-medium text-gray-700">
+                    Directors
+                  </label>
+
+                  <Select
+                    isMulti
+                    options={options.directors}
+                    value={options.directors.filter((option) =>
+                      selectedMovie.directors?.includes(option.value)
+                    )}
+                    onChange={(selectedOptions) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        directors: selectedOptions.map(
+                          (option) => option.value
+                        ),
+                      })
+                    }
+                    className="text-gray-700"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Writers</label>
-                  <input
-                    type="text"
-                    value={selectedMovie.writers}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, writers: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  <label className="block text-sm font-medium text-gray-700">
+                    Writers
+                  </label>
+
+                  <Select
+                    isMulti
+                    options={options.writers}
+                    value={options.writers.filter((option) =>
+                      selectedMovie.writers?.includes(option.value)
+                    )}
+                    onChange={(selectedOptions) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        writers: selectedOptions.map((option) => option.value),
+                      })
+                    }
+                    className="text-gray-700"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Trailer URL</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Trailer URL
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.trailerUrl}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, trailerUrl: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        trailerUrl: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
                   <textarea
                     value={selectedMovie.description}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, description: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        description: e.target.value,
+                      })
+                    }
                     rows={3}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   ></textarea>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Thumbnail</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Thumbnail
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.thumbnail}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, thumbnail: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        thumbnail: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <img
-                    src={selectedMovie.thumbnail || "/placeholder.svg"}
-                    alt="Thumbnail"
-                    className="mt-2 w-32 h-32 object-cover rounded"
-                  />
+                  src={selectedMovie.thumbnail ? decodeURIComponent(selectedMovie.thumbnail) : "/placeholder.svg"}
+                  alt="Thumbnail"
+                  className="mt-2 w-96 h-96 object-cover rounded"
+                />
+                
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Poster</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Poster
+                  </label>
                   <input
                     type="text"
                     value={selectedMovie.poster}
-                    onChange={(e) => setSelectedMovie({ ...selectedMovie, poster: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedMovie({
+                        ...selectedMovie,
+                        poster: e.target.value,
+                      })
+                    }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <img
                     src={selectedMovie.poster || "/placeholder.svg"}
                     alt="Poster"
-                    className="mt-2 w-32 h-48 object-cover rounded"
+                    className="mt-2 w-96 h-96 object-cover rounded"
                   />
                 </div>
                 <div className="col-span-2 flex items-center space-x-4">
@@ -421,37 +643,65 @@ const AllMovies = () => {
                     <input
                       type="checkbox"
                       checked={selectedMovie.publish}
-                      onChange={(e) => setSelectedMovie({ ...selectedMovie, publish: e.target.checked })}
+                      onChange={(e) =>
+                        setSelectedMovie({
+                          ...selectedMovie,
+                          publish: e.target.checked,
+                        })
+                      }
                       className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
-                    <label className="ml-2 block text-sm text-gray-900">Publish</label>
+                    <label className="ml-2 block text-sm text-gray-900">
+                      Publish
+                    </label>
                   </div>
                   <div className="flex items-center">
                     <input
                       type="checkbox"
                       checked={selectedMovie.enableDownload}
-                      onChange={(e) => setSelectedMovie({ ...selectedMovie, enableDownload: e.target.checked })}
+                      onChange={(e) =>
+                        setSelectedMovie({
+                          ...selectedMovie,
+                          enableDownload: e.target.checked,
+                        })
+                      }
                       className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
-                    <label className="ml-2 block text-sm text-gray-900">Enable Download</label>
+                    <label className="ml-2 block text-sm text-gray-900">
+                      Enable Download
+                    </label>
                   </div>
                   <div className="flex items-center">
                     <input
                       type="checkbox"
                       checked={selectedMovie.sendNewsletter}
-                      onChange={(e) => setSelectedMovie({ ...selectedMovie, sendNewsletter: e.target.checked })}
+                      onChange={(e) =>
+                        setSelectedMovie({
+                          ...selectedMovie,
+                          sendNewsletter: e.target.checked,
+                        })
+                      }
                       className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
-                    <label className="ml-2 block text-sm text-gray-900">Send Newsletter</label>
+                    <label className="ml-2 block text-sm text-gray-900">
+                      Send Newsletter
+                    </label>
                   </div>
                   <div className="flex items-center">
                     <input
                       type="checkbox"
                       checked={selectedMovie.sendPushNotification}
-                      onChange={(e) => setSelectedMovie({ ...selectedMovie, sendPushNotification: e.target.checked })}
+                      onChange={(e) =>
+                        setSelectedMovie({
+                          ...selectedMovie,
+                          sendPushNotification: e.target.checked,
+                        })
+                      }
                       className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
-                    <label className="ml-2 block text-sm text-gray-900">Send Push Notification</label>
+                    <label className="ml-2 block text-sm text-gray-900">
+                      Send Push Notification
+                    </label>
                   </div>
                 </div>
               </div>
@@ -463,7 +713,10 @@ const AllMovies = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
                   Save Changes
                 </button>
               </div>
@@ -471,7 +724,6 @@ const AllMovies = () => {
           </div>
         </div>
       )}
-
 
       {/* <EditMovieModal
         isOpen={isEditModalOpen}
