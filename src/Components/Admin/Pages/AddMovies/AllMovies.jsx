@@ -18,7 +18,10 @@ const AllMovies = () => {
   const [writerData, setWriterData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [thumbnail, setThumbnail] = useState(null);
+  const [poster, setPoster] = useState(null);
 
+  console.log("ssss", selectedMovie);
   useEffect(() => {
     const fetchMovieData = async () => {
       try {
@@ -89,6 +92,33 @@ const AllMovies = () => {
     fetchWriterData();
     fetchDirectorData();
   }, []);
+
+  const thumbnailUpload = (file) => {
+    if (file) {
+      setSelectedMovie({
+        ...selectedMovie,
+        thumbnail: file,
+      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnail(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const posterUpload = (file) => {
+    if (file) {
+      setSelectedMovie({
+        ...selectedMovie,
+        poster: file,
+      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPoster(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const options = {
     actors: actorData.map((item) => ({
@@ -676,23 +706,15 @@ const AllMovies = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setSelectedMovie({
-                            ...selectedMovie,
-                            thumbnail: reader.result,
-                          });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
+                    onChange={(e) => thumbnailUpload(e.target.files[0])}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <img
-                  src={selectedMovie.thumbnail ? decodeURIComponent(selectedMovie.thumbnail) : "/placeholder.svg"}
+                    src={
+                      thumbnail
+                        ? decodeURIComponent(thumbnail)
+                        : decodeURIComponent(selectedMovie.thumbnail) 
+                    }
                     alt="Thumbnail"
                     className="mt-2 w-96 h-96 object-cover rounded"
                   />
@@ -705,23 +727,15 @@ const AllMovies = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setSelectedMovie({
-                            ...selectedMovie,
-                            poster: reader.result,
-                          });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
+                    onChange={(e) => posterUpload(e.target.files[0])}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <img
-                  src={selectedMovie.poster ? decodeURIComponent(selectedMovie.poster) : "/placeholder.svg"}
+                    src={
+                      poster
+                        ? decodeURIComponent(poster)
+                        : decodeURIComponent(selectedMovie.poster) 
+                    }
                     alt="Poster"
                     className="mt-2 w-96 h-96 object-cover rounded"
                   />
