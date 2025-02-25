@@ -184,6 +184,8 @@ const AllMovies = () => {
         video,
       } = updatedMovie;
 
+      console.log("Updated Movie:", updatedMovie);
+
       const genresArray = Array.isArray(genres) ? genres : []; // Use directly if already an array
 
       const actorsArray = Array.isArray(actors)
