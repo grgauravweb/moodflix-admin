@@ -65,7 +65,7 @@ const Dashboard = () => {
       return <AddTvSeries />;
     } else if (currentPath === "/admin/add-tv-seriesNew") {
       return <AddTVSeriesNew />;
-    } else if (currentPath === "/admin/add-tv-seriesEp") {
+    } else if (currentPath.startsWith("/admin/add-tv-seriesEp/")) {
       return <AddTvSeriesEpisode />;
     } else if (currentPath === "/admin/add-tv-channel") {
       return <AddTvChannel />;
