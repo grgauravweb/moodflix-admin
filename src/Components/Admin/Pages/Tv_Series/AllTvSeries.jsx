@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import axios from 'axios';
-import EditTvSeriesModal from '../../Modals/AllTVseries/EditTvSeries'; // Import the modal component
-import { API_URLS } from '../../../../Apis/Globalapi';
+import React, { useState, useEffect } from "react";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
+import EditTvSeriesModal from "../../Modals/AllTVseries/EditTvSeries"; // Import the modal component
+import { API_URLS } from "../../../../Apis/Globalapi";
+import { BiPlus } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const AllTvSeries = () => {
   const [tvSeries, setTvSeries] = useState([]);
   const [filteredTvSeries, setFilteredTvSeries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [publicationFilter, setPublicationFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [publicationFilter, setPublicationFilter] = useState("All");
   const [editSeries, setEditSeries] = useState(null); // Track the series to be edited
   const [isEditing, setIsEditing] = useState(false); // Track modal visibility
+  const navigate = useNavigate();
 
   // Fetch TV Series data from API
   const fetchTvSeries = async () => {
     try {
       const response = await axios.get(API_URLS.AllTvSeries);
       setTvSeries(response.data);
-      console.log(response.data)
+      console.log(response.data);
       setFilteredTvSeries(response.data);
       // console.log(fetchTvSeries)
     } catch (error) {
-      console.error('Error fetching TV series:', error);
+      console.error("Error fetching TV series:", error);
     }
   };
 
@@ -34,15 +37,15 @@ const AllTvSeries = () => {
     let filteredData = tvSeries;
 
     if (searchTerm) {
-      filteredData = filteredData.filter(series =>
+      filteredData = filteredData.filter((series) =>
         series.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (publicationFilter === 'Published') {
-      filteredData = filteredData.filter(series => series.publish);
-    } else if (publicationFilter === 'Unpublished') {
-      filteredData = filteredData.filter(series => !series.publish);
+    if (publicationFilter === "Published") {
+      filteredData = filteredData.filter((series) => series.publish);
+    } else if (publicationFilter === "Unpublished") {
+      filteredData = filteredData.filter((series) => !series.publish);
     }
 
     setFilteredTvSeries(filteredData);
@@ -55,26 +58,28 @@ const AllTvSeries = () => {
 
   const handleDeleteClick = async (id) => {
     try {
-      await axios.delete( `${API_URLS.AllTvSeries}/${id}`);
-      setTvSeries(tvSeries.filter(series => series._id !== id));
-      setFilteredTvSeries(filteredTvSeries.filter(series => series._id !== id));
+      await axios.delete(`${API_URLS.AllTvSeries}/${id}`);
+      setTvSeries(tvSeries.filter((series) => series._id !== id));
+      setFilteredTvSeries(
+        filteredTvSeries.filter((series) => series._id !== id)
+      );
       alert("User deleted successfully!");
     } catch (error) {
-      console.error('Error deleting series:', error);
+      console.error("Error deleting series:", error);
     }
   };
 
   return (
     <div className="pt-20 p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-semibold mb-6">All TV Series</h2>
-      
+
       {/* Search and Filter Inputs */}
       <div className="flex justify-between mb-6">
-      <a href="/admin/add-tv-series">
-  <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-    + Add TV Series
-  </button>
-</a>
+        <a href="/admin/add-tv-series">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            + Add TV Series
+          </button>
+        </a>
         <div className="flex items-center space-x-4">
           <input
             type="text"
@@ -109,9 +114,16 @@ const AllTvSeries = () => {
               <th className="p-2 border-b text-sm md:text-base">#</th>
               <th className="p-2 border-b text-sm md:text-base">Thumbnail</th>
               <th className="p-2 border-b text-sm md:text-base">Name</th>
-              <th className="p-2 border-b text-sm md:text-base text-center">Paid</th>
-              <th className="p-2 border-b text-sm md:text-base text-center">Status</th>
-              <th className="p-2 border-b text-sm md:text-base text-center">Actions</th>
+              <th className="p-2 border-b text-sm md:text-base">Add Episode</th>
+              <th className="p-2 border-b text-sm md:text-base text-center">
+                Paid
+              </th>
+              <th className="p-2 border-b text-sm md:text-base text-center">
+                Status
+              </th>
+              <th className="p-2 border-b text-sm md:text-base text-center">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -120,14 +132,23 @@ const AllTvSeries = () => {
                 <td className="p-2 border-b">{index + 1}</td>
                 <td className="p-2 border-b">
                   <img
-                    src={`data:image/jpeg;base64,${series.thumbnail}`} 
+                    src={decodeURIComponent(series.thumbnail)}
                     alt={`${series.title} Thumbnail`}
                     className="w-12 h-12"
                   />
                 </td>
                 <td className="p-2 border-b">{series.title}</td>
-                <td className="p-2 border-b text-center">{series.freePaid === "Paid" ? 'Yes' : 'No'}</td>
-                <td className="p-2 border-b text-center">{series.publish ? 'Published' : 'Unpublished'}</td>
+                <td className="p-2 border-b">
+                  <button onClick={()=> navigate(`/admin/add-tv-seriesEp/${series._id}`)} className="flex justify-center items-center bg-blue-600 hover:bg-blue-700 transition px-4 py-2 text-white rounded-lg">
+                    Add Episode <BiPlus className="ml-2" />
+                  </button>
+                </td>
+                <td className="p-2 border-b text-center">
+                  {series.freePaid === "Paid" ? "Yes" : "No"}
+                </td>
+                <td className="p-2 border-b text-center">
+                  {series.publish ? "Published" : "Unpublished"}
+                </td>
                 <td className="p-2 border-b text-center">
                   <button
                     onClick={() => handleEditClick(series)}

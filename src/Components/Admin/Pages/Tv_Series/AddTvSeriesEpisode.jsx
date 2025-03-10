@@ -587,74 +587,12 @@ export const AddTvSeriesEpisode = () => {
 
             {/* Step Indicator */}
             <div className="flex flex-wrap justify-center items-center mb-8 gap-2">
-              <StepIndicator
-                number={1}
-                title="Series Info"
-                isActive={currentStep === 1}
-                isCompleted={currentStep > 1}
-              />
-              <StepIndicator number={2} title="Media" isActive={currentStep === 2} isCompleted={currentStep > 2} />
-              <StepIndicator number={3} title="Episodes" isActive={currentStep === 3} isCompleted={currentStep > 3} />
-              <StepIndicator number={4} title="Settings" isActive={currentStep === 4} isCompleted={currentStep > 4} />
+    
+              <StepIndicator number={1} title="Episodes" isActive={currentStep === 1} isCompleted={currentStep > 1} />
+            
             </div>
-
-            {/* TMDB Import Section */}
+            
             {currentStep === 1 && (
-              <div className="bg-blue-50 p-6 rounded-lg mb-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-xl font-semibold text-blue-900">Import from TMDB</h2>
-                    <p className="text-blue-700">Quickly import TV series details using TMDB ID</p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      name="tmdbId"
-                      value={seriesData.tmdbId}
-                      onChange={handleInputChange}
-                      placeholder="Enter TMDB ID"
-                      className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <button className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                      Import
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Step Content */}
-          <div className="mb-8">
-            {currentStep === 1 && (
-              <TVSeriesForm
-                seriesData={seriesData}
-                handleInputChange={handleInputChange}
-                errors={formErrors}
-                genresData={genresData}
-                actorData={actorData}
-                writerData={writerData}
-                directorData={directorData}
-                setSeriesData={setSeriesData}
-              />
-            )}
-
-            {currentStep === 2 && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">Thumbnail</h3>
-                    <UploadBox type="thumbnail" accept="image/*" icon={FiImage} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">Poster</h3>
-                    <UploadBox type="poster" accept="image/*" icon={FiImage} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 3 && (
               <div className="space-y-8">
                 {isAddingEpisode ? (
                   <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -784,58 +722,6 @@ export const AddTvSeriesEpisode = () => {
                 )}
               </div>
             )}
-
-            {currentStep === 4 && (
-              <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-lg">
-                  <h3 className="text-xl font-semibold mb-6">Publication Settings</h3>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        id: "sendNewsletter",
-                        label: "Send Newsletter",
-                        description: "Notify subscribers about this new TV series",
-                      },
-                      {
-                        id: "sendPushNotification",
-                        label: "Send Push Notification",
-                        description: "Send push notifications to mobile app users",
-                      },
-                      {
-                        id: "publish",
-                        label: "Publish Immediately",
-                        description: "Make this TV series visible to users",
-                      },
-                      {
-                        id: "enableDownload",
-                        label: "Enable Downloads",
-                        description: "Allow users to download episodes",
-                      },
-                    ].map(({ id, label, description }) => (
-                      <div
-                        key={id}
-                        className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          id={id}
-                          name={id}
-                          checked={seriesData[id]}
-                          onChange={handleInputChange}
-                          className="mt-1 h-5 w-5 text-blue-500 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <div>
-                          <label htmlFor={id} className="font-medium text-gray-900">
-                            {label}
-                          </label>
-                          <p className="text-sm text-gray-500">{description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Navigation Buttons */}
@@ -849,30 +735,7 @@ export const AddTvSeriesEpisode = () => {
               <FiChevronLeft size={20} className="mr-2" />
               Back
             </button>
-            <div className="flex space-x-4">
-              {currentStep < 4 ? (
-                <button
-                  onClick={handleNext}
-                  className="flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  Next
-                  <FiChevronRight size={20} className="ml-2" />
-                </button>
-              ) : (
-                <button
-                  onClick={handlePublish}
-                  disabled={loading}
-                  className={`flex items-center px-6 py-2 ${loading ? "bg-red-500" : "bg-green-500 hover:bg-green-600 transition-colors"}  text-white rounded-lg `}
-                >
-                  {loading ? "Please wait..." : "Publish TV Series"}
-                  {loading ? (
-                    <FiLoader size={20} className="ml-2 animate-pulse" />
-                  ) : (
-                    <BiCheck size={20} className="ml-2" />
-                  )}
-                </button>
-              )}
-            </div>
+           
           </div>
         </div>
       </div>
