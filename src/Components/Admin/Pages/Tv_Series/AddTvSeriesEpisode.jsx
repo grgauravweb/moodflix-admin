@@ -17,8 +17,10 @@ import {
 } from "react-icons/fi"
 import axios from "axios"
 import { API_URLS } from "../../../../Apis/Globalapi"
+import { useParams } from "react-router-dom"
 
 export const AddTvSeriesEpisode = () => {
+  const {seriesId} = useParams()
   const [currentStep, setCurrentStep] = useState(1)
   const [formErrors, setFormErrors] = useState({})
   const [seriesData, setSeriesData] = useState({
@@ -390,7 +392,7 @@ export const AddTvSeriesEpisode = () => {
         }
 
         // Send request to API
-        const response = await axios.post(API_URLS.AddTvSeries, formData, {
+        const response = await axios.post(`${API_URLS.AddTvSeriesep}/${seriesId}/add-episode`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
 

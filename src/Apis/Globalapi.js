@@ -25,6 +25,7 @@ export const API_URLS = {
 
   ////////TV SERIES ////////////////////
   AddTvSeries: `${BASE_URL}/tvseries/add`,
+  AddTvSeriesep: `${BASE_URL}/tvseries`,
   AllTvSeries: `${BASE_URL}/tvseries`,
   EditTvSeries: `${BASE_URL}/tvseries`,
 
