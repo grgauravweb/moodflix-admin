@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import EpisodeForm from "./EpisodeForm"
 import { BiPlus } from "react-icons/bi"
 import {
@@ -139,6 +139,7 @@ export const AddTvSeriesEpisode = () => {
     }
 
     try {
+      setLoading(true)
       const response = await axios.post(`${API_URLS.AddTvSeriesep}/${seriesId}/add-episode`, currentEpisode, {
         headers: { "Content-Type": "multipart/form-data" },
       })
@@ -147,15 +148,10 @@ export const AddTvSeriesEpisode = () => {
       if (response.data.success === true) {
         // Reset form
 
-        setEpisodes([])
+        fetchEpisodes()
+
         alert("TV Series Episode added successfully")
-      }
-
-    } catch (error) {
-      console.log("Error: ", error)
-    }
-
-    // Reset current episode form
+          // Reset current episode form
     setCurrentEpisode({
       episodeNumber: "",
       title: "",
@@ -170,7 +166,30 @@ export const AddTvSeriesEpisode = () => {
       thumbnail: null,
       poster: null,
     })
+      }
+
+    } catch (error) {
+      console.log("Error: ", error)
+    }finally{
+      setLoading(false)
+    }
+
+  
   }
+  const fetchEpisodes = async () => {
+    try {
+      const response = await axios.get(`${API_URLS.AddTvSeriesep}/${seriesId}/episodes`)
+      setEpisodes(response.data.episodes)
+      console.log("Episodes:", response.data.episodes);
+    } catch (error) {
+      console.error("Error fetching episodes:", error)
+    }
+  }
+
+  useEffect(() => {
+    
+    fetchEpisodes()
+  }, [])
 
   const editEpisode = (index) => {
     setCurrentEpisode(episodes[index])
@@ -183,122 +202,6 @@ export const AddTvSeriesEpisode = () => {
     setEpisodes(updatedEpisodes)
   }
 
-  const handlePublish = async () => {
-    // Validate all steps before publishing
-    // Proceed with publishing
-    setLoading(true)
-    try {
-      const {
-        title,
-        slug,
-        description,
-        actors,
-        directors,
-        writers,
-        imdbRating,
-        releaseDate,
-        countries,
-        genres,
-        seasons,
-        freePaid,
-        trailerUrl,
-        videoQuality,
-        sendNewsletter,
-        sendPushNotification,
-        publish,
-        enableDownload,
-        thumbnail,
-        poster,
-      } = currentEpisode
-
-      const genresArray = Array.isArray(genres) ? genres : []
-
-      const actorsArray = Array.isArray(actors)
-        ? actors
-        : typeof actors === "string"
-          ? actors.split(",").map((a) => a.trim())
-          : []
-      const directorsArray = Array.isArray(directors)
-        ? directors
-        : typeof directors === "string"
-          ? directors.split(",").map((d) => d.trim())
-          : []
-      const writersArray = Array.isArray(writers)
-        ? writers
-        : typeof writers === "string"
-          ? writers.split(",").map((w) => w.trim())
-          : []
-
-      // Create FormData for file uploads
-      const formData = new FormData()
-      formData.append("title", title)
-      formData.append("slug", slug)
-      formData.append("description", description)
-      formData.append("actors", actorsArray)
-      formData.append("directors", directorsArray)
-      formData.append("writers", writersArray)
-      formData.append("imdbRating", imdbRating)
-      formData.append("releaseDate", releaseDate)
-      formData.append("countries", countries)
-      formData.append("genres", genresArray)
-      formData.append("seasons", seasons)
-      formData.append("freePaid", freePaid)
-      formData.append("trailerUrl", trailerUrl)
-      formData.append("videoQuality", videoQuality)
-      formData.append("sendNewsletter", sendNewsletter)
-      formData.append("sendPushNotification", sendPushNotification)
-      formData.append("publish", publish)
-      formData.append("enableDownload", enableDownload)
-      formData.append("episodeCount", episodes.length)
-
-      if (thumbnail) formData.append("thumbnail", thumbnail)
-      if (poster) formData.append("poster", poster)
-
-      // Add episodes data
-      const episodeMetadata = episodes.map((episode) => ({
-        episodeNumber: episode.episodeNumber,
-        title: episode.title,
-        description: episode.description,
-        duration: episode.duration,
-        freePaid: episode.freePaid,
-        videoQuality: episode.videoQuality,
-      }));
-
-      formData.append("episodesMetadata", JSON.stringify(episodeMetadata));
-
-      // Append episode files
-      episodes.forEach((episode, index) => {
-        formData.append(`episodes[${index}][seasonNumber]`, Number(1));  // Add this line
-        formData.append(`episodes[${index}][episodeNumber]`, Number(episode.episodeNumber));
-        formData.append(`episodes[${index}][title]`, episode.title);
-        formData.append(`episodes[${index}][description]`, episode.description);
-        formData.append(`episodes[${index}][duration]`, episode.duration);
-        if (episode.thumbnail) formData.append(`episodesThumbnails[${index}]`, episode.thumbnail);
-        if (episode.video) formData.append(`episodes[${index}]`, episode.video);
-      });
-
-      for (let pair of formData.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
-
-      // Send request to API
-      const response = await axios.post(`${API_URLS.AddTvSeriesep}/${seriesId}/add-episode`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-
-      console.log("TV Series added successfully:", response.data)
-      if (response.data.success === true) {
-        // Reset form
-
-        setEpisodes([])
-        alert("TV Series added successfully")
-      }
-    } catch (error) {
-      console.error("Error adding TV Series:", error.response?.data || error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
 
 
   const UploadBox = ({ type, accept, icon: Icon }) => (
@@ -435,9 +338,10 @@ export const AddTvSeriesEpisode = () => {
                     </button>
                     <button
                       onClick={addEpisode}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      disabled={loading}
+                      className={`${loading ? " bg-red-500" : " bg-blue-500   hover:bg-blue-600 "} px-4 py-2 rounded-lg text-white`}
                     >
-                      {editingEpisodeIndex !== null ? "Update Episode" : "Add Episode"}
+                      {editingEpisodeIndex !== null ? "Update Episode" : loading ? "Wait..." : "Add Episode"}
                     </button>
                   </div>
                 </div>
