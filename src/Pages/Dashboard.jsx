@@ -41,6 +41,7 @@ import PaymentQr from "../Components/Admin/Pages/PaymentQr/PaymentQr";
 import { AddMoviesNew } from "../Components/Admin/Pages/AddMovies/AddMoviesNew";
 import { AddTVSeriesNew } from "../Components/Admin/Pages/Tv_Series/AddTvSeriesNew";
 import { AddTvSeriesEpisode } from "../Components/Admin/Pages/Tv_Series/AddTvSeriesEpisode";
+import { AllTvSeriesNew } from "../Components/Admin/Pages/Tv_Series/AllTvSeriesNew";
 
 const Dashboard = () => {
   // Use useLocation hook to get the current path dynamically
@@ -61,6 +62,8 @@ const Dashboard = () => {
       return <AllMovies />;
     } else if (currentPath === "/admin/all-tv-series") {
       return <AllTvSeries />;
+    } else if (currentPath === "/admin/all-tv-seriesNew") {
+      return <AllTvSeriesNew />;
     } else if (currentPath === "/admin/add-tv-series") {
       return <AddTvSeries />;
     } else if (currentPath === "/admin/add-tv-seriesNew") {
@@ -69,67 +72,67 @@ const Dashboard = () => {
       return <AddTvSeriesEpisode />;
     } else if (currentPath === "/admin/add-tv-channel") {
       return <AddTvChannel />;
-    } else if (currentPath === "/admin/all-tv-channel"){
-      return <AllTvChannel/>
-    }else if (currentPath === "/admin/category"){
-      return <Category/>
-    }else if (currentPath === "/admin/program-guide"){
-       return <ProgramGuide/> 
-    }else if (currentPath === "/admin/genre"){
-      return <Genre/>
-    }else if (currentPath === "/admin/image-slider"){
-      return <Slider/>
-    }else if (currentPath === "/admin/slider-setting"){
-      return <SliderSetting/>
-    }else if (currentPath === "/admin/actors-directors"){
-      return <StarManagement/>
-    }else if (currentPath == "/admin/users"){
-      return <UserManagement/>
-    }else if (currentPath === "/admin/movie-requests"){
-      return <MovieReq/>
-    }else if (currentPath === "/admin/report"){
-      return <Reports/>
-    }else if (currentPath === "/admin/subscription/package") {
-        return <Package/>
-    }else if (currentPath === "/admin/subscription/payment-setting"){
-      return <PaymentSetting/>
-    }else if (currentPath === "/admin/subscription/transaction-log"){
-      return <TransactionLog/>
-    }else if (currentPath === "/admin/subscription/setting"){
-      return <Setting/>
-    }else if (currentPath === "/admin/notification/setting"){
-      return <NotificationSetting/>
-    }else if(currentPath === "/admin/notification/live-tv"){
-      return <LiveTvNotification/>
-    }else if(currentPath === "/admin/system-settings"){
-      return <SystemSetting/>
-    }else if(currentPath === "/admin/android-setting"){
-      return <AndroidSetting/>
-    }else if(currentPath === "/admin/email-setting"){
-      return <EmailSetting/>
-    }else if(currentPath === "/admin/ads-setting"){
-      return <AdsSetting/>
-    }else if(currentPath === "/admin/tbdb-setting"){
-      return <TmdbSettings/>
-    }else if(currentPath === "/admin/cron-setting"){
-      return <CronSetting/>
-    }else if(currentPath === "/admin/api-setting"){
-      return <ApiSetting/>
-    }else if (currentPath === "/admin/movie-video-quality"){
-      return <MovieVideoQuality/>
-    }else if (currentPath === "/admin/comment-setting"){
-      return <CommentSetting/>
-    }else if (currentPath === "/admin/comments"){
-      return <Comments/>
-    }else if (currentPath === "/admin/search-import"){
-      return <SearchAndImport/>
-    }else if (currentPath === "/admin/movie-scrapper"){
-      return <MovieScrapper/>
-    }else if (currentPath === "/admin/Paymentqr"){
-      return <PaymentQr/>
+    } else if (currentPath === "/admin/all-tv-channel") {
+      return <AllTvChannel />
+    } else if (currentPath === "/admin/category") {
+      return <Category />
+    } else if (currentPath === "/admin/program-guide") {
+      return <ProgramGuide />
+    } else if (currentPath === "/admin/genre") {
+      return <Genre />
+    } else if (currentPath === "/admin/image-slider") {
+      return <Slider />
+    } else if (currentPath === "/admin/slider-setting") {
+      return <SliderSetting />
+    } else if (currentPath === "/admin/actors-directors") {
+      return <StarManagement />
+    } else if (currentPath == "/admin/users") {
+      return <UserManagement />
+    } else if (currentPath === "/admin/movie-requests") {
+      return <MovieReq />
+    } else if (currentPath === "/admin/report") {
+      return <Reports />
+    } else if (currentPath === "/admin/subscription/package") {
+      return <Package />
+    } else if (currentPath === "/admin/subscription/payment-setting") {
+      return <PaymentSetting />
+    } else if (currentPath === "/admin/subscription/transaction-log") {
+      return <TransactionLog />
+    } else if (currentPath === "/admin/subscription/setting") {
+      return <Setting />
+    } else if (currentPath === "/admin/notification/setting") {
+      return <NotificationSetting />
+    } else if (currentPath === "/admin/notification/live-tv") {
+      return <LiveTvNotification />
+    } else if (currentPath === "/admin/system-settings") {
+      return <SystemSetting />
+    } else if (currentPath === "/admin/android-setting") {
+      return <AndroidSetting />
+    } else if (currentPath === "/admin/email-setting") {
+      return <EmailSetting />
+    } else if (currentPath === "/admin/ads-setting") {
+      return <AdsSetting />
+    } else if (currentPath === "/admin/tbdb-setting") {
+      return <TmdbSettings />
+    } else if (currentPath === "/admin/cron-setting") {
+      return <CronSetting />
+    } else if (currentPath === "/admin/api-setting") {
+      return <ApiSetting />
+    } else if (currentPath === "/admin/movie-video-quality") {
+      return <MovieVideoQuality />
+    } else if (currentPath === "/admin/comment-setting") {
+      return <CommentSetting />
+    } else if (currentPath === "/admin/comments") {
+      return <Comments />
+    } else if (currentPath === "/admin/search-import") {
+      return <SearchAndImport />
+    } else if (currentPath === "/admin/movie-scrapper") {
+      return <MovieScrapper />
+    } else if (currentPath === "/admin/Paymentqr") {
+      return <PaymentQr />
     }
-      
-     else {
+
+    else {
       return <MainDashboard />; // Default to MainDashboard for other paths
     }
   };
