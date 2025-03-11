@@ -488,11 +488,15 @@ const AllMovies = () => {
                   </label>
                   <input
                     type="date"
-                    value={selectedMovie.releaseDate}
+                    value={
+                      selectedMovie.releaseDate
+                        ? selectedMovie.releaseDate.split("T")[0]
+                        : ""
+                    }
                     onChange={(e) =>
                       setSelectedMovie({
                         ...selectedMovie,
-                        releaseDate: e.target.value,
+                        releaseDate: e.target.value, // Will be in YYYY-MM-DD format
                       })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -713,7 +717,7 @@ const AllMovies = () => {
                     src={
                       thumbnail
                         ? decodeURIComponent(thumbnail)
-                        : decodeURIComponent(selectedMovie.thumbnail) 
+                        : decodeURIComponent(selectedMovie.thumbnail)
                     }
                     alt="Thumbnail"
                     className="mt-2 w-96 h-96 object-cover rounded"
@@ -734,7 +738,7 @@ const AllMovies = () => {
                     src={
                       poster
                         ? decodeURIComponent(poster)
-                        : decodeURIComponent(selectedMovie.poster) 
+                        : decodeURIComponent(selectedMovie.poster)
                     }
                     alt="Poster"
                     className="mt-2 w-96 h-96 object-cover rounded"

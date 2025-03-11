@@ -8,75 +8,8 @@ import { BsEye, BsTrash2 } from "react-icons/bs";
 import { EpisodeForm } from "./components/EpisodeForm";
 import { VideoPreview } from "./components/VideoPreview";
 import { EpisodeList } from "./components/EpisodeList";
+import EditAllSeries from "../../Modals/AllSeries/EditAllSeries";
 
-const DUMMY_TV_SERIES = [
-  {
-    _id: '1',
-    title: 'Stranger Things',
-    description: 'When a young boy disappears, his mother, a police chief, and his friends must confront terrifying forces in order to get him back.',
-    thumbnail: 'https://images.unsplash.com/photo-1633613286991-611fe299c4be?q=80&w=200&fit=crop',
-    freePaid: 'Paid',
-    publish: true,
-    episodes: [
-      {
-        seasonNumber: 1,
-        episodeNumber: 1,
-        title: 'Chapter One: The Vanishing of Will Byers',
-        duration: '48:00',
-        videoUrl: 'https://www.youtube.com/watch?v=b9EkMc79ZSU',
-        thumbnail: 'https://images.unsplash.com/photo-1633613286991-611fe299c4be?q=80&w=200&fit=crop',
-        description: 'On his way home from a friend\'s house, young Will sees something terrifying. Nearby, a sinister secret lurks in the depths of a government lab.'
-      },
-      {
-        seasonNumber: 1,
-        episodeNumber: 2,
-        title: 'Chapter Two: The Weirdo on Maple Street',
-        duration: '45:00',
-        videoUrl: 'https://www.youtube.com/watch?v=b9EkMc79ZSU',
-        thumbnail: 'https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?q=80&w=200&fit=crop',
-        description: 'Lucas, Mike and Dustin try to talk to the girl they found in the woods. Hopper questions an anxious Joyce about an unsettling phone call.'
-      },
-    ],
-    views: 1500000,
-    likes: 250000,
-    imdbRating: '8.7',
-    releaseDate: '2016-07-15',
-    videoQuality: '4K',
-  },
-  {
-    _id: '2',
-    title: 'Breaking Bad',
-    description: 'A high school chemistry teacher turned methamphetamine manufacturer partners with a former student to secure his family\'s financial future.',
-    thumbnail: 'https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?q=80&w=200&fit=crop',
-    freePaid: 'Paid',
-    publish: true,
-    episodes: [
-      {
-        seasonNumber: 1,
-        episodeNumber: 1,
-        title: 'Pilot',
-        duration: '58:00',
-        videoUrl: 'https://www.youtube.com/watch?v=HhesaQXLuRY',
-        thumbnail: 'https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?q=80&w=200&fit=crop',
-        description: 'A high school chemistry teacher learns he has terminal cancer and turns to a life of crime.'
-      },
-      {
-        seasonNumber: 1,
-        episodeNumber: 2,
-        title: 'Cat\'s in the Bag...',
-        duration: '48:00',
-        videoUrl: 'https://www.youtube.com/watch?v=HhesaQXLuRY',
-        thumbnail: 'https://images.unsplash.com/photo-1633613286991-611fe299c4be?q=80&w=200&fit=crop',
-        description: 'Walt and Jesse attempt to dispose of two bodies, but things don\'t go as planned.'
-      },
-    ],
-    views: 2000000,
-    likes: 300000,
-    imdbRating: '9.5',
-    releaseDate: '2008-01-20',
-    videoQuality: '4K',
-  }
-];
 
 export const AllTvSeriesNew = () => {
   const [tvSeries, setTvSeries] = useState([]);
@@ -89,6 +22,8 @@ export const AllTvSeriesNew = () => {
   const [editingEpisode, setEditingEpisode] = useState(null);
   const [selectedSeriesId, setSelectedSeriesId] = useState(null);
   const [loading, setLoading] = useState(false)
+  const [editSeries, setEditSeries] = useState(null); // Track the series to be edited
+    const [isEditing, setIsEditing] = useState(false); // Track modal visibility
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -123,6 +58,9 @@ export const AllTvSeriesNew = () => {
     setEditingEpisode(null);
     setSelectedSeriesId(null);
   };
+
+
+
 
   const handleEpisodeSubmit = async (episodeData) => {
     if (!selectedSeriesId) return;
@@ -212,9 +150,15 @@ export const AllTvSeriesNew = () => {
     }
   };
 
+  
   useEffect(() => {
     fetchTvSeries();
   }, []);
+
+  const handleEditClick = (series) => {
+    setEditSeries(series);
+    setIsEditing(true); // Show the edit modal
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 p-6">
@@ -278,7 +222,7 @@ export const AllTvSeriesNew = () => {
                     <div className="flex justify-between items-start">
                       <h2 className="text-2xl font-bold text-gray-900">{series.title}</h2>
                       <div className="flex gap-2">
-                        <button className="text-blue-600 hover:text-blue-700 transition-colors">
+                        <button onClick={()=>handleEditClick(series)} className="text-blue-600 hover:text-blue-700 transition-colors">
                           <FiEdit3 className="w-5 h-5" />
                         </button>
                         <button className="text-red-600 hover:text-red-700 transition-colors">
@@ -351,6 +295,19 @@ export const AllTvSeriesNew = () => {
           ))}
         </div>
       </div>
+
+     
+      {isEditing && (
+         <EditAllSeries
+          seriesData={editSeries}
+          onClose={() => setIsEditing(false)}
+          onRefresh={() => {
+            // After editing, refresh the TV series data
+            fetchTvSeries();
+            setIsEditing(false);
+          }}
+        />
+      )}
 
       {/* Video Preview Modal */}
       {isVideoModalOpen && selectedEpisode && (

@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { API_URLS } from '../../../../Apis/Globalapi';
+import React, { useState, useEffect } from "react";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { API_URLS } from "../../../../Apis/Globalapi";
+import axios from "axios";
 
 const StarManagement = () => {
   const [stars, setStars] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('');
+  const [modalType, setModalType] = useState("");
   const [selectedStarId, setSelectedStarId] = useState(null);
-  const [starType, setStarType] = useState('Actor');
-  const [starName, setStarName] = useState('');
-  const [starBio, setStarBio] = useState('');
-  const [starImage, setStarImage] = useState('');
-  const [tmdbId, setTmdbId] = useState('');
-  const [tmdbType, setTmdbType] = useState('TMDB MOVIE');
+  const [starType, setStarType] = useState("Actor");
+  const [starName, setStarName] = useState("");
+  const [starBio, setStarBio] = useState("");
+  const [starImage, setStarImage] = useState("");
+  const [tmdbId, setTmdbId] = useState("");
+  const [tmdbType, setTmdbType] = useState("TMDB MOVIE");
+  const [data, setData] = useState([]);
+  const [step, setStep] = useState(1);
+  const [writerData, setWriterData] = useState([]); 
+  const [directorData, setDirectorData] = useState([]); 
+
 
   useEffect(() => {
     fetchStars();
@@ -20,13 +26,34 @@ const StarManagement = () => {
 
   const fetchStars = async () => {
     try {
-      const response = await fetch(API_URLS.getStars);
-      const data = await response.json();
-      setStars(data);
+      // Fetching Genres
+      const actorResponse = await axios.get(API_URLS.getActor);
+      setStars(actorResponse.data);
     } catch (error) {
-      console.error('Error fetching stars:', error);
+      console.error("Error fetching data:", error);
     }
   };
+
+  const fetchWriterData = async () => {
+    try {
+      // Fetching Genres
+      const genresResponse = await axios.get(API_URLS.getWriter);
+      setWriterData(genresResponse.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchDirectorData = async () => {
+    try {
+      // Fetching Genres
+      const genresResponse = await axios.get(API_URLS.getDirector);
+      setDirectorData(genresResponse.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -48,27 +75,27 @@ const StarManagement = () => {
         tmdbType,
       };
 
-      const response = modalType === 'Add Star'
-        ? await fetch(API_URLS.saveStar, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(starData),
-          })
-        : await fetch(`${API_URLS.saveStar}/${selectedStarId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(starData),
-          });
+      const response =
+        modalType === "Add Star"
+          ? await fetch(API_URLS.saveStar, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(starData),
+            })
+          : await fetch(`${API_URLS.saveStar}/${selectedStarId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(starData),
+            });
 
       if (!response.ok) {
-        throw new Error('Failed to save star');
+        throw new Error("Failed to save star");
       }
       setShowModal(false);
-      alert("Added Succsfully")
+      alert("Added Succsfully");
       fetchStars();
-
     } catch (error) {
-      console.error('Error saving star:', error);
+      console.error("Error saving star:", error);
     }
   };
 
@@ -76,14 +103,14 @@ const StarManagement = () => {
     try {
       const response = await fetch(`${API_URLS.fetchFromTMDB}/${tmdbId}`);
       const data = await response.json();
-
+      console.log("TMDB Data:", data);
       // Assuming the response contains fields like 'name', 'bio', and 'image'
-      setStarName(data.name || '');
-      setStarBio(data.bio || '');
-      setStarImage(data.image || '');
-      setModalType('Add Star'); // Switch to Add Star modal after fetching
+      setStarName(data.name || "");
+      setStarBio(data.bio || "");
+      setStarImage(data.image || "");
+      setModalType("Add Star"); // Switch to Add Star modal after fetching
     } catch (error) {
-      console.error('Error fetching from TMDB:', error);
+      console.error("Error fetching from TMDB:", error);
     }
   };
 
@@ -93,20 +120,20 @@ const StarManagement = () => {
     setStarName(star.starName);
     setStarBio(star.starBio);
     setStarImage(star.starImage);
-    setModalType('Edit Star');
+    setModalType("Edit Star");
     setShowModal(true);
   };
 
   const handleDeleteClick = async (id) => {
     try {
       await fetch(`${API_URLS.saveStar}/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      setStars(stars.filter(star => star._id !== id));
-      console.log('Deleted star with id:', id);
-      alert("Deleted Succsfully")
+      setStars(stars.filter((star) => star._id !== id));
+      console.log("Deleted star with id:", id);
+      alert("Deleted Succsfully");
     } catch (error) {
-      console.error('Error deleting star:', error);
+      console.error("Error deleting star:", error);
     }
   };
 
@@ -116,17 +143,35 @@ const StarManagement = () => {
 
       <div className="flex justify-between mb-6">
         <button
-          onClick={() => { setModalType('Add Star'); setShowModal(true); }}
+          onClick={() => {
+            setModalType("Add Star");
+            setShowModal(true);
+          }}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           + Add Star
         </button>
-        
+
         <button
-          onClick={() => { setModalType('Fetch from TMDB'); setShowModal(true); }}
+          onClick={() => {
+            setModalType("Fetch from TMDB");
+            setShowModal(true);
+          }}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
         >
           Fetch from TMDB
+        </button>
+      </div>
+
+      <div className="flex mb-6 justify-center gap-1 rounded-xl">
+        <button className="bg-white border-2 border-violet-500 w-1/3 py-3 rounded-lg hover:bg-violet-500 hover:text-white transition-all font-semibold shadow-md">
+          Actors
+        </button>
+        <button className="bg-white border-2 border-blue-600 w-1/3 py-3 rounded-lg hover:bg-blue-500 hover:text-white transition-all font-semibold shadow-md">
+          Directors
+        </button>
+        <button className="bg-white border-2 border-green-600 w-1/3 py-3 rounded-lg hover:bg-green-500 hover:text-white transition-all font-semibold shadow-md">
+          Writers
         </button>
       </div>
 
@@ -140,7 +185,9 @@ const StarManagement = () => {
               <th className="p-2 border-b text-sm md:text-base">Name</th>
               <th className="p-2 border-b text-sm md:text-base">Type</th>
               <th className="p-2 border-b text-sm md:text-base">Bio</th>
-              <th className="p-2 border-b text-sm md:text-base text-center">Actions</th>
+              <th className="p-2 border-b text-sm md:text-base text-center">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="text-gray-700">
@@ -181,46 +228,91 @@ const StarManagement = () => {
         <div className="fixed inset-0 bg-opacity-30 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow-md w-96">
             <h3 className="text-lg font-semibold mb-4">{modalType}</h3>
-            
-            {modalType === 'Add Star' || modalType === 'Edit Star' ? (
+
+            {modalType === "Add Star" || modalType === "Edit Star" ? (
               <>
                 <label>Star Type</label>
-                <select value={starType} onChange={(e) => setStarType(e.target.value)} className="w-full p-2 border mb-4 rounded">
+                <select
+                  value={starType}
+                  onChange={(e) => setStarType(e.target.value)}
+                  className="w-full p-2 border mb-4 rounded"
+                >
                   <option value="Actor">Actor</option>
                   <option value="Director">Director</option>
                   <option value="Writer">Writer</option>
                 </select>
 
                 <label>Star Name</label>
-                <input type="text" value={starName} onChange={(e) => setStarName(e.target.value)} className="w-full p-2 border mb-4 rounded" />
+                <input
+                  type="text"
+                  value={starName}
+                  onChange={(e) => setStarName(e.target.value)}
+                  className="w-full p-2 border mb-4 rounded"
+                />
 
                 <label>Star Bio</label>
-                <textarea value={starBio} onChange={(e) => setStarBio(e.target.value)} className="w-full p-2 border mb-4 rounded"></textarea>
+                <textarea
+                  value={starBio}
+                  onChange={(e) => setStarBio(e.target.value)}
+                  className="w-full p-2 border mb-4 rounded"
+                ></textarea>
 
                 <label>Photo</label>
-                <input type="file" onChange={handleImageChange} className="w-full p-2 border mb-4 rounded" />
+                <input
+                  type="file"
+                  onChange={handleImageChange}
+                  className="w-full p-2 border mb-4 rounded"
+                />
               </>
             ) : (
               <>
                 <label>TMDB ID</label>
-                <input type="text" value={tmdbId} onChange={(e) => setTmdbId(e.target.value)} className="w-full p-2 border mb-4 rounded" />
+                <input
+                  type="text"
+                  value={tmdbId}
+                  onChange={(e) => setTmdbId(e.target.value)}
+                  className="w-full p-2 border mb-4 rounded"
+                />
 
                 <label>TMDB Type</label>
-                <select value={tmdbType} onChange={(e) => setTmdbType(e.target.value)} className="w-full p-2 border mb-4 rounded">
+                <select
+                  value={tmdbType}
+                  onChange={(e) => setTmdbType(e.target.value)}
+                  className="w-full p-2 border mb-4 rounded"
+                >
                   <option value="TMDB MOVIE">TMDB MOVIE</option>
                   <option value="TMDB TV-SERIES">TMDB TV-SERIES</option>
                 </select>
 
-                <p className="text-xs text-gray-500 mb-2">Enter TMDB ID to fetch the details.</p>
+                <p className="text-xs text-gray-500 mb-2">
+                  Enter TMDB ID to fetch the details.
+                </p>
 
-                <button onClick={handleFetchFromTMDB} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">Fetch</button>
-                <p className="text-xs text-gray-500 mt-2">Note: Actor photos will be imported by cron.</p>
+                <button
+                  onClick={handleFetchFromTMDB}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4"
+                >
+                  Fetch
+                </button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Note: Actor photos will be imported by cron.
+                </p>
               </>
             )}
 
             <div className="flex justify-end mt-4">
-              <button onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded mr-2">Cancel</button>
-              <button onClick={handleSaveStar} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveStar}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>
