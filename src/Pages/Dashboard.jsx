@@ -6,8 +6,6 @@ import MainDashboard from "../Components/Admin/MainDashboard";
 import CountryManagement from "../Components/Admin/Pages/CountryManagement";
 import AddMovies from "../Components/Admin/Pages/AddMovies/Addmovies";
 import AllMovies from "../Components/Admin/Pages/AddMovies/AllMovies";
-import AddTvSeries from "../Components/Admin/Pages/Tv_Series/AddTvSeries";
-import AllTvSeries from "../Components/Admin/Pages/Tv_Series/AllTvSeries";
 import AddTvChannel from "../Components/Admin/Pages/Tv_Channels/AddTvChannel";
 import AllTvChannel from "../Components/Admin/Pages/Tv_Channels/AllTvChannel";
 import Category from "../Components/Admin/Pages/Tv_Channels/Category";
@@ -40,7 +38,6 @@ import MovieScrapper from "../Components/Admin/Pages/MovieScrapper/MovieScrapper
 import PaymentQr from "../Components/Admin/Pages/PaymentQr/PaymentQr";
 import { AddMoviesNew } from "../Components/Admin/Pages/AddMovies/AddMoviesNew";
 import { AddTVSeriesNew } from "../Components/Admin/Pages/Tv_Series/AddTvSeriesNew";
-import { AddTvSeriesEpisode } from "../Components/Admin/Pages/Tv_Series/AddTvSeriesEpisode";
 import { AllTvSeriesNew } from "../Components/Admin/Pages/Tv_Series/AllTvSeriesNew";
 
 const Dashboard = () => {
@@ -60,16 +57,10 @@ const Dashboard = () => {
       return <AddMovies />;
     } else if (currentPath === "/admin/all-movies") {
       return <AllMovies />;
-    } else if (currentPath === "/admin/all-tv-seriesNew") {
-      return <AllTvSeries />;
     } else if (currentPath === "/admin/all-tv-series") {
       return <AllTvSeriesNew />;
-    } else if (currentPath === "/admin/add-tv-seriesNew") {
-      return <AddTvSeries />;
     } else if (currentPath === "/admin/add-tv-series") {
       return <AddTVSeriesNew />;
-    } else if (currentPath.startsWith("/admin/add-tv-seriesEp/")) {
-      return <AddTvSeriesEpisode />;
     } else if (currentPath === "/admin/add-tv-channel") {
       return <AddTvChannel />;
     } else if (currentPath === "/admin/all-tv-channel") {

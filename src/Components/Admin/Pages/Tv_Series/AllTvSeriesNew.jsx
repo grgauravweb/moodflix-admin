@@ -68,9 +68,9 @@ export const AllTvSeriesNew = () => {
 
   const handleEpisodeSubmit = async (episodeData) => {
     if (!selectedSeriesId) return;
-    console.log("selected: ", selectedSeriesId);
+
     if (editingEpisode) {
-      console.log("Edit", episodeData);
+    
       try {
         setLoading(true);
         const response = await axios.put(
@@ -81,7 +81,6 @@ export const AllTvSeriesNew = () => {
           }
         );
 
-        console.log("TV Series Episode updated successfully:", response.data);
         if (response.data.success === true) {
           // Reset form
 
@@ -103,7 +102,7 @@ export const AllTvSeriesNew = () => {
           }
         );
 
-        console.log("TV Series Episode added successfully:", response.data);
+
         if (response.data.success === true) {
           // Reset form
 
@@ -140,16 +139,14 @@ export const AllTvSeriesNew = () => {
   };
 
   const handleDeleteEpisode = async(seriesId, episode) => {
-    // if (!confirm('Are you sure you want to delete this episode?')) return;
-    console.log("series and episode i", seriesId, episode)
+    
     try {
       setLoading(true);
       const response = await axios.delete(
-        `${API_URLS.DeleteTvSeriesep}/${seriesId}/episode/${episode._id}`
+        `${API_URLS.DeleteTvSeriesep}/${seriesId}/episodes/${episode._id}`
         
       );
 
-      console.log("TV Series Episode delete successfully:", response.data);
       if (response.data.success === true) {
         // Reset form
 

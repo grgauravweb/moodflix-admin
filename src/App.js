@@ -19,10 +19,8 @@ function App() {
 
         {/* TV Series Routes */}
         <Route path="/admin/add-tv-series" element={<Dashboard />} />
-        <Route path="/admin/add-tv-seriesNew" element={<Dashboard />} />
         <Route path="/admin/add-tv-seriesEp/:seriesId" element={<Dashboard />} />
         <Route path="/admin/all-tv-series" element={<Dashboard />} />
-        <Route path="/admin/all-tv-seriesNew" element={<Dashboard />} />
 
         {/* TV Channels Routes */}
         <Route path="/admin/add-tv-channel" element={<Dashboard />} />
