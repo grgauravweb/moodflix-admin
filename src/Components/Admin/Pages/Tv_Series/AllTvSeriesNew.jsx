@@ -64,10 +64,9 @@ export const AllTvSeriesNew = () => {
 
   const handleEpisodeSubmit = async (episodeData) => {
     if (!selectedSeriesId) return;
-    console.log("Epis: ", episodeData)
     console.log("selected: ", selectedSeriesId)
     if (editingEpisode) {
-      console.log("Edit")
+      console.log("Edit",episodeData)
     } else {
       try {
         setLoading(true)
@@ -144,7 +143,6 @@ export const AllTvSeriesNew = () => {
     try {
       const response = await axios.get(API_URLS.AllTvSeries);
       setTvSeries(response.data);
-      console.log("Response_Data: ", response.data);
     } catch (error) {
       console.error("Error fetching TV series:", error);
     }

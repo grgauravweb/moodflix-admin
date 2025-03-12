@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { FiImage, FiVideo, FiX } from 'react-icons/fi';
 
 export function EpisodeForm({ loading, episode, onSubmit, onClose }) {
+ 
     const [formData, setFormData] = useState({
         seasonNumber: episode?.seasonNumber || 1,
         episodeNumber: episode?.episodeNumber || 1,
         title: episode?.title || '',
         description: episode?.description || '',
         duration: episode?.duration || '',
-        video: episode?.videoUrl || '',
+        video: episode?.video || '',
         thumbnail: episode?.thumbnail || '',
     });
 
@@ -120,6 +121,8 @@ export function EpisodeForm({ loading, episode, onSubmit, onClose }) {
             [type]: url, // Update formData with selected file URL
         }));
     };
+
+
     const UploadBox = ({ type, accept, name, icon: Icon }) => (
         <div className="space-y-4">
             <div
@@ -173,7 +176,7 @@ export function EpisodeForm({ loading, episode, onSubmit, onClose }) {
                 </label>
             </div>
 
-            {previews[type] && (
+            {previews[type] ? (
                 <div className="relative bg-gray-50 p-4 rounded-lg">
                     <button
                         onClick={() => removeFile(type)}
@@ -185,6 +188,17 @@ export function EpisodeForm({ loading, episode, onSubmit, onClose }) {
                         <video src={previews[type]} controls className="w-full rounded-lg" style={{ maxHeight: "200px" }} />
                     ) : (
                         <img src={previews[type] || "/placeholder.svg"} alt={`${type} preview`} className="w-full h-48 object-cover rounded-lg" />
+                    )}
+                </div>
+            ) : (
+                <div className="relative bg-gray-50 p-4 rounded-lg">
+                    
+                    {type === "video" ? (
+                        <video src={formData.video} controls className="w-full rounded-lg" style={{ maxHeight: "200px" }} />
+                    ) : (
+                        <img src={formData.thumbnail
+                    ? decodeURIComponent(formData.thumbnail)
+                    : decodeURIComponent(formData.thumbnail)} alt={`${type} preview`} className="w-full h-48 object-cover rounded-lg" />
                     )}
                 </div>
             )}

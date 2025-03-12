@@ -60,13 +60,13 @@ const Dashboard = () => {
       return <AddMovies />;
     } else if (currentPath === "/admin/all-movies") {
       return <AllMovies />;
-    } else if (currentPath === "/admin/all-tv-series") {
-      return <AllTvSeries />;
     } else if (currentPath === "/admin/all-tv-seriesNew") {
+      return <AllTvSeries />;
+    } else if (currentPath === "/admin/all-tv-series") {
       return <AllTvSeriesNew />;
-    } else if (currentPath === "/admin/add-tv-series") {
-      return <AddTvSeries />;
     } else if (currentPath === "/admin/add-tv-seriesNew") {
+      return <AddTvSeries />;
+    } else if (currentPath === "/admin/add-tv-series") {
       return <AddTVSeriesNew />;
     } else if (currentPath.startsWith("/admin/add-tv-seriesEp/")) {
       return <AddTvSeriesEpisode />;

@@ -70,7 +70,75 @@ function EditAllSeries({ seriesData, onClose, onRefresh }) {
   const handleSaveMovie = async () => {
     console.log("selectedMovie", selectedMovie);
     try {
-      await axios.put(`${API_URLS.EditTvSeries}/${selectedMovie._id}`, selectedMovie);
+      const {
+        title,
+        slug,
+        description,
+        actors,
+        directors,
+        writers,
+        imdbRating,
+        releaseDate,
+        countries,
+        genres,
+        seasons,
+        freePaid,
+        trailerUrl,
+        videoQuality,
+        sendNewsletter,
+        sendPushNotification,
+        publish,
+        enableDownload,
+        thumbnail,
+        poster,
+      } = selectedMovie
+
+      const genresArray = Array.isArray(genres) ? genres : []
+
+      const actorsArray = Array.isArray(actors)
+        ? actors
+        : typeof actors === "string"
+          ? actors.split(",").map((a) => a.trim())
+          : []
+      const directorsArray = Array.isArray(directors)
+        ? directors
+        : typeof directors === "string"
+          ? directors.split(",").map((d) => d.trim())
+          : []
+      const writersArray = Array.isArray(writers)
+        ? writers
+        : typeof writers === "string"
+          ? writers.split(",").map((w) => w.trim())
+          : []
+
+      // Create FormData for file uploads
+      const formData = new FormData()
+      formData.append("title", title)
+      formData.append("slug", slug)
+      formData.append("description", description)
+      formData.append("actors", actorsArray)
+      formData.append("directors", directorsArray)
+      formData.append("writers", writersArray)
+      formData.append("imdbRating", imdbRating)
+      formData.append("releaseDate", releaseDate)
+      formData.append("countries", countries)
+      formData.append("genres", genresArray)
+      formData.append("seasons", seasons)
+      formData.append("freePaid", freePaid)
+      formData.append("trailerUrl", trailerUrl)
+      formData.append("videoQuality", videoQuality)
+      formData.append("sendNewsletter", sendNewsletter)
+      formData.append("sendPushNotification", sendPushNotification)
+      formData.append("publish", publish)
+      formData.append("enableDownload", enableDownload)
+
+      if (thumbnail) formData.append("thumbnail", thumbnail)
+      if (poster) formData.append("poster", poster)
+        
+      const response = await axios.put(`${API_URLS.EditTvSeries}/${selectedMovie._id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("respeodijdebj", response)
       onRefresh(); // Refresh the list after updating
       onClose(); // Close the modal after successful update
       alert("Data Updated");
