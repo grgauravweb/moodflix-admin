@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { FaThumbsUp, FaTv } from "react-icons/fa";
 import axios from "axios"; // Import the modal component
 import { API_URLS } from "../../../../Apis/Globalapi";
-import { BiCalendar, BiChevronDown, BiChevronUp, BiPlus, BiSearch, BiStar } from "react-icons/bi";
+import {
+  BiCalendar,
+  BiChevronDown,
+  BiChevronUp,
+  BiPlus,
+  BiSearch,
+  BiStar,
+} from "react-icons/bi";
 import { FiEdit3, FiFilm, FiFilter, FiPlus } from "react-icons/fi";
 import { BsEye, BsTrash2 } from "react-icons/bs";
 import { EpisodeForm } from "./components/EpisodeForm";
@@ -10,20 +17,20 @@ import { VideoPreview } from "./components/VideoPreview";
 import { EpisodeList } from "./components/EpisodeList";
 import EditAllSeries from "../../Modals/AllSeries/EditAllSeries";
 
-
 export const AllTvSeriesNew = () => {
   const [tvSeries, setTvSeries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all");
   const [expandedSeries, setExpandedSeries] = useState(null);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isEpisodeFormOpen, setIsEpisodeFormOpen] = useState(false);
   const [editingEpisode, setEditingEpisode] = useState(null);
   const [selectedSeriesId, setSelectedSeriesId] = useState(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [editSeries, setEditSeries] = useState(null); // Track the series to be edited
-    const [isEditing, setIsEditing] = useState(false); // Track modal visibility
+  const [isEditing, setIsEditing] = useState(false); // Track modal visibility
+  const [filteredTvSeries, setFilteredTvSeries] = useState([]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -59,56 +66,56 @@ export const AllTvSeriesNew = () => {
     setSelectedSeriesId(null);
   };
 
-
-
-
   const handleEpisodeSubmit = async (episodeData) => {
     if (!selectedSeriesId) return;
-    console.log("selected: ", selectedSeriesId)
+    console.log("selected: ", selectedSeriesId);
     if (editingEpisode) {
-      console.log("Edit",episodeData)
+      console.log("Edit", episodeData);
       try {
-        setLoading(true)
-        const response = await axios.post(`${API_URLS.EditTvSeriesep}/${selectedSeriesId}/update-episode/${episodeData._id}`, episodeData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        setLoading(true);
+        const response = await axios.put(
+          `${API_URLS.EditTvSeriesep}/${selectedSeriesId}/update-episode/${episodeData._id}`,
+          episodeData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
 
-        console.log("TV Series Episode updated successfully:", response.data)
+        console.log("TV Series Episode updated successfully:", response.data);
         if (response.data.success === true) {
           // Reset form
 
-          fetchTvSeries()
-
-        
+          fetchTvSeries();
         }
-
       } catch (error) {
-        console.log("Error: ", error)
+        console.log("Error: ", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     } else {
       try {
-        setLoading(true)
-        const response = await axios.post(`${API_URLS.AddTvSeriesep}/${selectedSeriesId}/add-episode`, episodeData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        setLoading(true);
+        const response = await axios.post(
+          `${API_URLS.AddTvSeriesep}/${selectedSeriesId}/add-episode`,
+          episodeData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
 
-        console.log("TV Series Episode added successfully:", response.data)
+        console.log("TV Series Episode added successfully:", response.data);
         if (response.data.success === true) {
           // Reset form
 
-          fetchTvSeries()
+          fetchTvSeries();
 
-          alert("TV Series Episode added successfully")
+          alert("TV Series Episode added successfully");
           // Reset current episode form
-
         }
-
       } catch (error) {
-        console.log("Error: ", error)
+        console.log("Error: ", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     // setTvSeries(prevSeries => prevSeries.map(series => {
@@ -132,29 +139,43 @@ export const AllTvSeriesNew = () => {
     closeEpisodeForm();
   };
 
-  const handleDeleteEpisode = (seriesId, episode) => {
+  const handleDeleteEpisode = async(seriesId, episode) => {
     // if (!confirm('Are you sure you want to delete this episode?')) return;
+    console.log("series and episode i", seriesId, episode)
+    try {
+      setLoading(true);
+      const response = await axios.delete(
+        `${API_URLS.DeleteTvSeriesep}/${seriesId}/episode/${episode._id}`
+        
+      );
 
-    setTvSeries(prevSeries => prevSeries.map(series => {
-      if (series._id !== seriesId) return series;
+      console.log("TV Series Episode delete successfully:", response.data);
+      if (response.data.success === true) {
+        // Reset form
 
-      return {
-        ...series,
-        episodes: series.episodes.filter(ep =>
-          ep.seasonNumber !== episode.seasonNumber ||
-          ep.episodeNumber !== episode.episodeNumber
-        ),
-      };
-    }));
-  };
+        fetchTvSeries();
 
-  const filteredSeries = tvSeries.filter(series => {
-    const matchesSearch = series.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === 'all' ||
-      (filter === 'paid' && series.freePaid === 'Paid') ||
-      (filter === 'free' && series.freePaid === 'Free') ||
-      (filter === 'published' && series.publish) ||
-      (filter === 'unpublished' && !series.publish);
+        alert("TV Series Episode delete successfully");
+        // Reset current episode form
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    } finally {
+      setLoading(false);
+    }
+   
+  };  
+
+  const filteredSeries = tvSeries.filter((series) => {
+    const matchesSearch = series.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "paid" && series.freePaid === "Paid") ||
+      (filter === "free" && series.freePaid === "Free") ||
+      (filter === "published" && series.publish) ||
+      (filter === "unpublished" && !series.publish);
     return matchesSearch && matchesFilter;
   });
 
@@ -168,7 +189,6 @@ export const AllTvSeriesNew = () => {
     }
   };
 
-  
   useEffect(() => {
     fetchTvSeries();
   }, []);
@@ -176,6 +196,19 @@ export const AllTvSeriesNew = () => {
   const handleEditClick = (series) => {
     setEditSeries(series);
     setIsEditing(true); // Show the edit modal
+  };
+
+  const handleDeleteClick = async (id) => {
+    try {
+      await axios.delete(`${API_URLS.AllTvSeries}/${id}`);
+      setTvSeries(tvSeries.filter((series) => series._id !== id));
+      setFilteredTvSeries(
+        filteredTvSeries.filter((series) => series._id !== id)
+      );
+      alert("series deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting series:", error);
+    }
   };
 
   return (
@@ -227,8 +260,11 @@ export const AllTvSeriesNew = () => {
 
         {/* Series Grid */}
         <div className="grid grid-cols-1 gap-6">
-          {filteredSeries.map(series => (
-            <div key={series._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          {filteredSeries.map((series) => (
+            <div
+              key={series._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+            >
               <div className="p-6">
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <img
@@ -238,17 +274,27 @@ export const AllTvSeriesNew = () => {
                   />
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h2 className="text-2xl font-bold text-gray-900">{series.title}</h2>
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        {series.title}
+                      </h2>
                       <div className="flex gap-2">
-                        <button onClick={()=>handleEditClick(series)} className="text-blue-600 hover:text-blue-700 transition-colors">
+                        <button
+                          onClick={() => handleEditClick(series)}
+                          className="text-blue-600 hover:text-blue-700 transition-colors"
+                        >
                           <FiEdit3 className="w-5 h-5" />
                         </button>
-                        <button className="text-red-600 hover:text-red-700 transition-colors">
+                        <button
+                          onClick={() => handleDeleteClick(series._id)}
+                          className="text-red-600 hover:text-red-700 transition-colors"
+                        >
                           <BsTrash2 className="w-5 h-5" />
                         </button>
                       </div>
                     </div>
-                    <p className="mt-2 text-gray-600 line-clamp-2">{series.description}</p>
+                    <p className="mt-2 text-gray-600 line-clamp-2">
+                      {series.description}
+                    </p>
                     <div className="mt-4 flex flex-wrap items-center gap-4">
                       <div className="flex items-center gap-2">
                         <BiStar className="w-5 h-5 text-yellow-400" />
@@ -268,7 +314,9 @@ export const AllTvSeriesNew = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <BiCalendar className="w-5 h-5 text-gray-500" />
-                        <span>{new Date(series.releaseDate).getFullYear()}</span>
+                        <span>
+                          {new Date(series.releaseDate).getFullYear()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -302,8 +350,12 @@ export const AllTvSeriesNew = () => {
                   <div className="mt-4 border-t pt-4">
                     <EpisodeList
                       episodes={series.episodes}
-                      onEditEpisode={(episode) => openEpisodeForm(series._id, episode)}
-                      onDeleteEpisode={(episode) => handleDeleteEpisode(series._id, episode)}
+                      onEditEpisode={(episode) =>
+                        openEpisodeForm(series._id, episode)
+                      }
+                      onDeleteEpisode={(episode) =>
+                        handleDeleteEpisode(series._id, episode)
+                      }
                       onPreviewEpisode={openVideoModal}
                     />
                   </div>
@@ -314,9 +366,8 @@ export const AllTvSeriesNew = () => {
         </div>
       </div>
 
-     
       {isEditing && (
-         <EditAllSeries
+        <EditAllSeries
           seriesData={editSeries}
           onClose={() => setIsEditing(false)}
           onRefresh={() => {
@@ -329,10 +380,7 @@ export const AllTvSeriesNew = () => {
 
       {/* Video Preview Modal */}
       {isVideoModalOpen && selectedEpisode && (
-        <VideoPreview
-          episode={selectedEpisode}
-          onClose={closeVideoModal}
-        />
+        <VideoPreview episode={selectedEpisode} onClose={closeVideoModal} />
       )}
 
       {/* Episode Form Modal */}
@@ -347,4 +395,3 @@ export const AllTvSeriesNew = () => {
     </div>
   );
 };
-
