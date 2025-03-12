@@ -582,7 +582,7 @@ function EditAllSeries({ seriesData, onClose, onRefresh }) {
           <div className="mt-6 flex justify-end">
             <button
               type="button"
-              onClick={() => setIsEditModalOpen(false)}
+              onClick={() => setIsEditModalOpen(onClose)}
               className="bg-gray-200 text-gray-700 px-4 py-2 rounded mr-2 hover:bg-gray-300"
             >
               Cancel

@@ -306,6 +306,7 @@ export const AddTVSeriesNew = () => {
           })
           setCurrentStep(1)
           alert("TV Series added successfully")
+          window.location.pathname = "admin/all-tv-series";
         }
       } catch (error) {
         console.error("Error adding TV Series:", error.response?.data || error.message)

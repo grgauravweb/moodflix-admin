@@ -218,7 +218,7 @@ export const AllTvSeriesNew = () => {
               <FaTv className="w-8 h-8" />
               TV Series Management
             </h1>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <button onClick={()=>  window.location.pathname = "admin/add-tv-series"} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
               <FiPlus className="w-5 h-5" />
               Add New Series
             </button>
