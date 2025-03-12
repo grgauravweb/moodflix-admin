@@ -67,6 +67,26 @@ export const AllTvSeriesNew = () => {
     console.log("selected: ", selectedSeriesId)
     if (editingEpisode) {
       console.log("Edit",episodeData)
+      try {
+        setLoading(true)
+        const response = await axios.post(`${API_URLS.EditTvSeriesep}/${selectedSeriesId}/update-episode/${episodeData._id}`, episodeData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+
+        console.log("TV Series Episode updated successfully:", response.data)
+        if (response.data.success === true) {
+          // Reset form
+
+          fetchTvSeries()
+
+        
+        }
+
+      } catch (error) {
+        console.log("Error: ", error)
+      } finally {
+        setLoading(false)
+      }
     } else {
       try {
         setLoading(true)

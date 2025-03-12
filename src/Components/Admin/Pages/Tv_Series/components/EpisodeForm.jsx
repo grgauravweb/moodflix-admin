@@ -4,6 +4,7 @@ import { FiImage, FiVideo, FiX } from 'react-icons/fi';
 export function EpisodeForm({ loading, episode, onSubmit, onClose }) {
  
     const [formData, setFormData] = useState({
+        _id: episode?._id || '',
         seasonNumber: episode?.seasonNumber || 1,
         episodeNumber: episode?.episodeNumber || 1,
         title: episode?.title || '',
