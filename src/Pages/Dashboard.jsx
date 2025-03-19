@@ -53,8 +53,6 @@ const Dashboard = () => {
       return <MainDashboard />;
     } else if (currentPath === "/admin/add-movies") {
       return <AddMoviesNew />;
-    } else if (currentPath === "/admin/add-moviess") {
-      return <AddMovies />;
     } else if (currentPath === "/admin/all-movies") {
       return <AllMovies />;
     } else if (currentPath === "/admin/all-tv-series") {
@@ -83,13 +81,13 @@ const Dashboard = () => {
       return <MovieReq />
     } else if (currentPath === "/admin/report") {
       return <Reports />
-    } else if (currentPath === "/admin/subscription/package") {
+    } else if (currentPath === "/admin/package") {
       return <Package />
-    } else if (currentPath === "/admin/subscription/payment-setting") {
+    } else if (currentPath === "/admin/payment-setting") {
       return <PaymentSetting />
-    } else if (currentPath === "/admin/subscription/transaction-log") {
+    } else if (currentPath === "/admin/transaction-log") {
       return <TransactionLog />
-    } else if (currentPath === "/admin/subscription/setting") {
+    } else if (currentPath === "/admin/setting") {
       return <Setting />
     } else if (currentPath === "/admin/notification/setting") {
       return <NotificationSetting />

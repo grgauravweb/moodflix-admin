@@ -11,8 +11,10 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import { API_URLS } from "../../../../Apis/Globalapi";
+import { useNavigate } from "react-router-dom";
 
 export const AddMoviesNew = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [formErrors, setFormErrors] = useState({});
   const [movieData, setMovieData] = useState({
@@ -204,9 +206,8 @@ export const AddMoviesNew = () => {
         break;
       }
     }
-
+  
     if (isValid) {
-      // Proceed with publishing
       setLoading(true);
       try {
         const {
@@ -232,47 +233,42 @@ export const AddMoviesNew = () => {
           poster,
           video
         } = movieData;
-        
-        const genresArray = Array.isArray(genres) ? genres : [];  // Use directly if already an array
-
+  
+        const genresArray = Array.isArray(genres) ? genres : []; 
+  
         const actorsArray = Array.isArray(actors) ? actors : typeof actors === "string" ? actors.split(",").map(a => a.trim()) : [];
         const directorsArray = Array.isArray(directors) ? directors : typeof directors === "string" ? directors.split(",").map(d => d.trim()) : [];
         const writersArray = Array.isArray(writers) ? writers : typeof writers === "string" ? writers.split(",").map(w => w.trim()) : [];
-
-
-
-        // Create FormData for file uploads
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("slug", slug);
-        formData.append("description", description);
-        formData.append("actors", actorsArray);
-        formData.append("directors", directorsArray);
-        formData.append("writers", writersArray);
-        formData.append("imdbRating", imdbRating);
-        formData.append("releaseDate", releaseDate);
-        formData.append("countries", countries);
-        formData.append("genres", genresArray);
-        formData.append("runtime", runtime);
-        formData.append("freePaid", freePaid);
-        formData.append("trailerUrl", trailerUrl);
-        formData.append("videoQuality", videoQuality);
-        formData.append("sendNewsletter", sendNewsletter);
-        formData.append("sendPushNotification", sendPushNotification);
-        formData.append("publish", publish);
-        formData.append("enableDownload", enableDownload);
-
-        if (video) formData.append("video", video);
-        if (thumbnail) formData.append("thumbnail", thumbnail);
-        if (poster) formData.append("poster", poster);
-
-        console.log("Movie Payload:", formData);
-
+  
+        // Create a JSON payload instead of FormData
+        const moviePayload = {
+          title,
+          slug,
+          description,
+          actors: actorsArray,
+          directors: directorsArray,
+          writers: writersArray,
+          imdbRating,
+          releaseDate,
+          countries,
+          genres: genresArray,
+          runtime,
+          freePaid,
+          trailerUrl,
+          videoQuality,
+          sendNewsletter,
+          sendPushNotification,
+          publish,
+          enableDownload
+        };
+  
+        console.log("Movie Payload:", moviePayload);
+  
         // Send request to API
-        const response = await axios.post(API_URLS.AddMovies, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const response = await axios.post(API_URLS.AddMovies, moviePayload, {
+          headers: { "Content-Type": "application/json" },
         });
-
+  
         console.log("Movie added successfully:", response.data);
         if (response.data.success === true) {
           // Reset form
@@ -291,24 +287,24 @@ export const AddMoviesNew = () => {
             freePaid: "Paid",
             trailerUrl: "",
             videoQuality: "4K",
-            thumbnail: null,
-            poster: null,
-            video: null, // Reset video
             sendNewsletter: false,
             sendPushNotification: false,
             publish: false,
             enableDownload: false,
           });
+  
           alert("Movie added successfully");
+          navigate("/admin/all-movies");
         }
-
+  
       } catch (error) {
         console.error("Error adding movie:", error.response?.data || error.message);
-      }finally{
+      } finally {
         setLoading(false);
       }
     }
   };
+  
 
   useEffect(() => {
     const fetchData = async () => {

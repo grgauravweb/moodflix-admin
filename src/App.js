@@ -53,10 +53,10 @@ function App() {
 
 
         {/* Subscription */}
-        <Route path="/admin/subscription/package" element={<Dashboard />} />
-        <Route path="/admin/subscription/payment-setting" element={<Dashboard />} />
-        <Route path="/admin/subscription/transaction-log" element={<Dashboard />} />
-        <Route path="/admin/subscription/setting" element={<Dashboard />} />
+        <Route path="/admin/package" element={<Dashboard />} />
+        <Route path="/admin/payment-setting" element={<Dashboard />} />
+        <Route path="/admin/transaction-log" element={<Dashboard />} />
+        <Route path="/admin/setting" element={<Dashboard />} />
 
 
         {/* Notificaton */}

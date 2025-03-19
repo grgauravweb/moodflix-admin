@@ -14,46 +14,57 @@ const StarManagement = () => {
   const [starImage, setStarImage] = useState("");
   const [tmdbId, setTmdbId] = useState("");
   const [tmdbType, setTmdbType] = useState("TMDB MOVIE");
-  const [data, setData] = useState([]);
-  const [step, setStep] = useState(1);
   const [writerData, setWriterData] = useState([]); 
   const [directorData, setDirectorData] = useState([]); 
-
+  const [data, setData] = useState([stars]);
+  const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("Actor");
 
   useEffect(() => {
     fetchStars();
+    fetchWriterData();
+    fetchDirectorData();
   }, []);
 
   const fetchStars = async () => {
     try {
-      // Fetching Genres
+      setLoading(true);
       const actorResponse = await axios.get(API_URLS.getActor);
       setStars(actorResponse.data);
+      setData(actorResponse.data); 
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
+    }finally{
+      setLoading(false);
     }
   };
 
   const fetchWriterData = async () => {
     try {
-      // Fetching Genres
+      setLoading(true);
       const genresResponse = await axios.get(API_URLS.getWriter);
       setWriterData(genresResponse.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
+    }finally{
+      setLoading(false);
     }
   };
 
   const fetchDirectorData = async () => {
     try {
-      // Fetching Genres
+      setLoading(true);
       const genresResponse = await axios.get(API_URLS.getDirector);
       setDirectorData(genresResponse.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
+    }finally{
+      setLoading(false);
     }
   };
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -94,6 +105,8 @@ const StarManagement = () => {
       setShowModal(false);
       alert("Added Succsfully");
       fetchStars();
+      fetchDirectorData();
+      fetchWriterData();
     } catch (error) {
       console.error("Error saving star:", error);
     }
@@ -164,19 +177,43 @@ const StarManagement = () => {
       </div>
 
       <div className="flex mb-6 justify-center gap-1 rounded-xl">
-        <button className="bg-white border-2 border-violet-500 w-1/3 py-3 rounded-lg hover:bg-violet-500 hover:text-white transition-all font-semibold shadow-md">
-          Actors
-        </button>
-        <button className="bg-white border-2 border-blue-600 w-1/3 py-3 rounded-lg hover:bg-blue-500 hover:text-white transition-all font-semibold shadow-md">
-          Directors
-        </button>
-        <button className="bg-white border-2 border-green-600 w-1/3 py-3 rounded-lg hover:bg-green-500 hover:text-white transition-all font-semibold shadow-md">
-          Writers
-        </button>
-      </div>
+      <button
+        onClick={() => {
+          setData(stars);
+          setActiveTab("Actor");
+        }}
+        className={`w-1/3 py-3 rounded-lg transition-all font-semibold shadow-md border-2 
+          ${activeTab === "Actor" ? "bg-violet-500 text-white border-violet-500" : "bg-white border-violet-500 hover:bg-violet-500 hover:text-white"}`}
+      >
+        Actors
+      </button>
+    
+      <button
+        onClick={() => {
+          setData(directorData);
+          setActiveTab("Director");
+        }}
+        className={`w-1/3 py-3 rounded-lg transition-all font-semibold shadow-md border-2 
+          ${activeTab === "Director" ? "bg-blue-500 text-white border-blue-500" : "bg-white border-blue-600 hover:bg-blue-500 hover:text-white"}`}
+      >
+        Directors
+      </button>
+    
+      <button
+        onClick={() => {
+          setData(writerData);
+          setActiveTab("Writer");
+        }}
+        className={`w-1/3 py-3 rounded-lg transition-all font-semibold shadow-md border-2 
+          ${activeTab === "Writer" ? "bg-green-500 text-white border-green-500" : "bg-white border-green-600 hover:bg-green-500 hover:text-white"}`}
+      >
+        Writers
+      </button>
+    </div>
+    
 
       {/* Table Container */}
-      <div className="bg-white p-4 shadow-md rounded overflow-x-auto">
+      {loading ?  <div className="flex h-screen justify-center items-center">Loading...</div> :<div className="bg-white p-4 shadow-md rounded overflow-x-auto">
         <table className="min-w-full text-left border-collapse">
           <thead>
             <tr>
@@ -191,7 +228,7 @@ const StarManagement = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {stars.map((star, index) => (
+            {data.map((star, index) => (
               <tr key={star._id} className="hover:bg-gray-100">
                 <td className="p-2 border-b">{index + 1}</td>
                 <td className="p-2 border-b">
@@ -222,7 +259,7 @@ const StarManagement = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div>}
 
       {showModal && (
         <div className="fixed inset-0 bg-opacity-30 flex items-center justify-center">

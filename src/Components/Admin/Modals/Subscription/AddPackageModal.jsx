@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { API_URLS } from "../../../../Apis/Globalapi";
 
-const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => {
-  const [packageName, setPackageName] = useState('');
-  const [validity, setValidity] = useState('1 week (7 days)');
-  const [price, setPrice] = useState('');
-  const [status, setStatus] = useState('Active');
+const AddPackageModal = ({
+  isOpen,
+  onClose,
+  onAdd,
+  onEdit,
+  editingPackage,
+}) => {
+  const [packageName, setPackageName] = useState("");
+  const [validity, setValidity] = useState("1 week (7 days)");
+  const [price, setPrice] = useState("");
+  const [status, setStatus] = useState("Active");
+  const [description, setDescription] = useState("")
 
   useEffect(() => {
     if (editingPackage) {
@@ -13,11 +20,13 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
       setValidity(editingPackage.validity);
       setPrice(editingPackage.price);
       setStatus(editingPackage.status);
+      setDescription(editingPackage.description);
     } else {
-      setPackageName('');
-      setValidity('1 week (7 days)');
-      setPrice('');
-      setStatus('Active');
+      setPackageName("");
+      setValidity("1 week (7 days)");
+      setPrice("");
+      setStatus("Active");
+      setDescription("");
     }
   }, [editingPackage]);
 
@@ -29,6 +38,7 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
       validity,
       price,
       status,
+      description,
     };
 
     try {
@@ -37,18 +47,18 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
       if (editingPackage) {
         // Update existing package
         response = await fetch(`${API_URLS.packages}/${editingPackage._id}`, {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(packageData),
         });
       } else {
         // Create new package
         response = await fetch(API_URLS.packages, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(packageData),
         });
@@ -66,10 +76,10 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
       }
 
       onClose(); // Close the modal after successful addition or edit
-      alert("Date Saved")
+      alert("Date Saved");
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to save package: ' + error.message);
+      console.error("Error:", error);
+      alert("Failed to save package: " + error.message);
     }
   };
 
@@ -78,8 +88,10 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 pt-20 p-5">
       <div className="bg-white rounded p-4 max-w-sm w-full overflow-hidden shadow-lg">
-        <h3 className="text-xl font-semibold mb-2">{editingPackage ? 'Edit Package' : 'Add Package'}</h3>
-        
+        <h3 className="text-xl font-semibold mb-2">
+          {editingPackage ? "Edit Package" : "Add Package"}
+        </h3>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="block mb-1">Package Name</label>
@@ -99,15 +111,15 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
               onChange={(e) => setValidity(e.target.value)}
               className="border w-full p-1 rounded"
             >
-              <option value="1 week (7 days)">1 week (7 days)</option>
-              <option value="2 weeks (14 days)">2 weeks (14 days)</option>
-              <option value="3 weeks (21 days)">3 weeks (21 days)</option>
-              <option value="4 weeks (28 days)">4 weeks (28 days)</option>
-              <option value="1 month (30 days)">1 month (30 days)</option>
-              <option value="2 months (60 days)">2 months (60 days)</option>
-              <option value="3 months (90 days)">3 months (90 days)</option>
-              <option value="6 months (180 days)">6 months (180 days)</option>
-              <option value="12 months (365 days)">12 months (365 days)</option>
+              <option value="7">1 week (7 days)</option>
+              <option value="14">2 weeks (14 days)</option>
+              <option value="21">3 weeks (21 days)</option>
+              <option value="28">4 weeks (28 days)</option>
+              <option value="30">1 month (30 days)</option>
+              <option value="60">2 months (60 days)</option>
+              <option value="90">3 months (90 days)</option>
+              <option value="180">6 months (180 days)</option>
+              <option value="365">12 months (365 days)</option>
             </select>
           </div>
 
@@ -134,6 +146,19 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
             </select>
           </div>
 
+          <div className="mb-3">
+            <label htmlFor="description" className="block mb-1">
+              Description (optional)
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder="Enter description..."
+            ></textarea>
+          </div>
+
           <div className="flex justify-end">
             <button
               type="button"
@@ -146,7 +171,7 @@ const AddPackageModal = ({ isOpen, onClose, onAdd, onEdit, editingPackage }) => 
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-200"
             >
-              {editingPackage ? 'Update Package' : 'Add Package'}
+              {editingPackage ? "Update Package" : "Add Package"}
             </button>
           </div>
         </form>

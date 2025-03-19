@@ -80,6 +80,7 @@ export const API_URLS = {
 
 
   packages: `${BASE_URL}/packages`,
+  subscription: `${BASE_URL}/subscription`,
   paymentSettings: `${BASE_URL}/payment-settings`,
   transactions: `${BASE_URL}/transactions`,
   SubSettings: `${BASE_URL}/settings`,
